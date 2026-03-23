@@ -1,0 +1,45 @@
+{
+  "name": "control-asistencia-mamihanball",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run"
+  },
+  "dependencies": {
+    "@heroui/react": "^2.8.10",
+    "autoprefixer": "^10.4.27",
+    "face-api.js": "^0.22.2",
+    "firebase": "^11.4.0",
+    "framer-motion": "^11.0.0",
+    "jspdf": "^2.5.2",
+    "jspdf-autotable": "^5.0.7",
+    "next": "^14.2.35",
+    "next-pwa": "^5.6.0",
+    "postcss": "^8.5.8",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwind-variants": "^3.2.2",
+    "tailwindcss": "^3.4.19"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/user-event": "^14.0.0",
+    "@types/jspdf": "^2.0.0",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^4.0.0",
+    "eslint": "^9",
+    "eslint-config-next": "15.2.1",
+    "jsdom": "^26.0.0",
+    "typescript": "^5",
+    "vitest": "^3.0.0"
+  }
+}

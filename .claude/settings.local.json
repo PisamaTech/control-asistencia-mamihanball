@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --no-turbopack)",
+      "Bash(npm install:*)",
+      "Bash(npx vitest:*)",
+      "Bash(cd:*)",
+      "Bash(npx rimraf:*)",
+      "Bash(cmd /c \"rmdir /s /q \"\"D:\\\\Proyectos\\\\MamiHandball_Asistencias\\\\control-asistencia-mamihanball\\\\node_modules\"\"\")",
+      "Bash(./node_modules/.bin/vitest run:*)",
+      "Bash(./node_modules/.bin/next build:*)",
+      "Bash(ls:*)",
+      "Bash(dir:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(del tailwind.config.js)",
+      "Bash(node:*)",
+      "Bash(gh issue:*)",
+      "Bash(for i:*)",
+      "Bash(do gh:*)",
+      "Bash(done)",
+      "WebFetch(domain:v2.heroui.com)",
+      "Bash(git add:*)"
+    ]
+  }
+}
