@@ -118,14 +118,14 @@ export default function NewSessionPage() {
           {/* Header de progreso */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <h1 className="text-sm font-semibold tracking-wider text-orange-700 uppercase">
+              <h1 className="text-sm font-semibold tracking-wider text-warning-700 uppercase">
                 NUEVA SESIÓN
               </h1>
               <span className="text-sm text-gray-500">Paso 2 de 2</span>
             </div>
             <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
               <div
-                className="h-full bg-teal-600 rounded-full"
+                className="h-full bg-primary-600 rounded-full"
                 style={{ width: "100%" }}
               />
             </div>
@@ -145,7 +145,7 @@ export default function NewSessionPage() {
             />
           )}
 
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-default-600">
             {recognizedIds.length} jugadora
             {recognizedIds.length !== 1 ? "s" : ""} reconocida
             {recognizedIds.length !== 1 ? "s" : ""} automáticamente. Revisá y
@@ -169,7 +169,7 @@ export default function NewSessionPage() {
                   {recognizedIds.includes(p.id) && (
                     <Chip
                       size="sm"
-                      className="bg-teal-100 text-teal-700 font-semibold"
+                      className="bg-primary-100 text-primary-700 font-semibold"
                     >
                       IA
                     </Chip>
@@ -188,7 +188,7 @@ export default function NewSessionPage() {
               Volver
             </Button>
             <Button
-              className="flex-1 h-12 bg-teal-600 text-white font-semibold hover:bg-teal-700"
+              className="flex-1 h-12 bg-primary-600 text-white font-semibold hover:bg-primary-700"
               onPress={handleSave}
               isLoading={saving}
             >
@@ -206,14 +206,14 @@ export default function NewSessionPage() {
         {/* Header de progreso */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <h1 className="text-sm font-semibold tracking-wider text-orange-700 uppercase">
+            <h1 className="text-sm font-semibold tracking-wider text-warning-700 uppercase">
               NUEVA SESIÓN
             </h1>
             <span className="text-sm text-gray-500">Paso 1 de 2</span>
           </div>
           <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
             <div
-              className="h-full bg-teal-600 rounded-full"
+              className="h-full bg-primary-600 rounded-full"
               style={{ width: "50%" }}
             />
           </div>
@@ -229,20 +229,20 @@ export default function NewSessionPage() {
               onClick={() => setSessionType("practice")}
               className={`p-4 rounded-xl border-2 transition-all ${
                 sessionType === "practice"
-                  ? "bg-white border-teal-600 shadow-md"
-                  : "bg-gray-100 border-gray-200"
+                  ? "bg-white border-primary-600 shadow-md"
+                  : "bg-default-100 border-default-200"
               }`}
             >
               <div className="flex items-center gap-2">
                 <svg
-                  className={`w-6 h-6 ${sessionType === "practice" ? "text-teal-600" : "text-gray-500"}`}
+                  className={`w-6 h-6 ${sessionType === "practice" ? "text-primary-600" : "text-gray-500"}`}
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
                   <path d="M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-.5a1.5 1.5 0 000 3h.5a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-.5a1.5 1.5 0 00-3 0v.5a1 1 0 01-1 1H6a1 1 0 01-1-1v-3a1 1 0 00-1-1h-.5a1.5 1.5 0 010-3H4a1 1 0 001-1V6a1 1 0 011-1h3a1 1 0 001-1v-.5z" />
                 </svg>
                 <span
-                  className={`font-semibold ${sessionType === "practice" ? "text-teal-700" : "text-gray-600"}`}
+                  className={`font-semibold ${sessionType === "practice" ? "text-primary-700" : "text-default-600"}`}
                 >
                   Práctica
                 </span>
@@ -253,13 +253,13 @@ export default function NewSessionPage() {
               onClick={() => setSessionType("game")}
               className={`p-4 rounded-xl border-2 transition-all ${
                 sessionType === "game"
-                  ? "bg-white border-teal-600 shadow-md"
-                  : "bg-gray-100 border-gray-200"
+                  ? "bg-white border-primary-600 shadow-md"
+                  : "bg-default-100 border-default-200"
               }`}
             >
               <div className="flex items-center gap-2">
                 <svg
-                  className={`w-6 h-6 ${sessionType === "game" ? "text-teal-600" : "text-gray-500"}`}
+                  className={`w-6 h-6 ${sessionType === "game" ? "text-primary-600" : "text-gray-500"}`}
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -270,7 +270,7 @@ export default function NewSessionPage() {
                   />
                 </svg>
                 <span
-                  className={`font-semibold ${sessionType === "game" ? "text-teal-700" : "text-gray-600"}`}
+                  className={`font-semibold ${sessionType === "game" ? "text-primary-700" : "text-default-600"}`}
                 >
                   Partido
                 </span>
@@ -291,18 +291,18 @@ export default function NewSessionPage() {
             classNames={{
               base: "w-full",
               label: "text-sm font-semibold text-gray-900 mb-2",
-              inputWrapper: "bg-white border-2 border-gray-200 h-12",
+              inputWrapper: "bg-white border-2 border-default-200 h-12",
               input: "text-gray-700"
             }}
           />
         </div>
 
         {/* Tomar foto del equipo */}
-        <div className="border-2 border-dashed border-gray-300 rounded-2xl p-6 bg-gray-50">
+        <div className="border-2 border-dashed border-default-300 rounded-2xl p-6 bg-gray-50">
           <div className="flex flex-col items-center gap-4">
-            <div className="bg-teal-500/20 rounded-full w-16 h-16 flex items-center justify-center">
+            <div className="bg-primary-500/20 rounded-full w-16 h-16 flex items-center justify-center">
               <svg
-                className="w-8 h-8 text-teal-600"
+                className="w-8 h-8 text-primary-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -337,7 +337,7 @@ export default function NewSessionPage() {
         <div className="grid grid-cols-2 gap-3">
           <Button
             size="lg"
-            className="bg-orange-500 hover:bg-orange-600 text-white font-semibold"
+            className="bg-warning-500 hover:bg-warning-600 text-white font-semibold"
             onPress={() => cameraInputRef.current?.click()}
             startContent={
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -355,7 +355,7 @@ export default function NewSessionPage() {
           <Button
             size="lg"
             variant="bordered"
-            className="border-2 border-gray-300 font-semibold"
+            className="border-2 border-default-300 font-semibold"
             onPress={() => fileInputRef.current?.click()}
             startContent={
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -386,7 +386,7 @@ export default function NewSessionPage() {
                 setPhotoFile(null);
                 setPhotoPreview(null);
               }}
-              className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg"
+              className="absolute top-2 right-2 bg-danger text-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg"
             >
               ✕
             </button>
@@ -405,7 +405,7 @@ export default function NewSessionPage() {
             minRows={3}
             classNames={{
               input: "text-gray-700",
-              inputWrapper: "bg-white border-2 border-gray-200",
+              inputWrapper: "bg-white border-2 border-default-200",
             }}
           />
         </div>
@@ -417,8 +417,8 @@ export default function NewSessionPage() {
           onPress={handleProcess}
           className={`w-full h-14 text-lg font-semibold ${
             photoFile
-              ? "bg-teal-600 text-white hover:bg-teal-700"
-              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              ? "bg-primary-600 text-white hover:bg-primary-700"
+              : "bg-default-300 text-gray-500 cursor-not-allowed"
           }`}
           endContent={
             photoFile && (

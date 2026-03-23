@@ -104,7 +104,7 @@ export default function ReportsPage() {
           <h1 className="text-3xl font-bold text-gray-900">Reportes</h1>
           <Button
             size="sm"
-            className="bg-teal-600 text-white font-semibold"
+            className="bg-primary text-white font-semibold"
             isLoading={exporting}
             isDisabled={stats.length === 0 || loading}
             onPress={handleExportPDF}
@@ -131,8 +131,8 @@ export default function ReportsPage() {
               onClick={() => setPeriod(key)}
               className={`px-4 py-2 rounded-lg font-medium transition-all ${
                 period === key
-                  ? "bg-teal-600 text-white shadow-md"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  ? "bg-primary text-white shadow-md"
+                  : "bg-default-200 text-default-700 hover:bg-default-300"
               }`}
             >
               {label}
@@ -151,8 +151,8 @@ export default function ReportsPage() {
               onClick={() => setSessionType(key)}
               className={`px-4 py-2 rounded-lg font-medium transition-all ${
                 sessionType === key
-                  ? "bg-teal-600 text-white shadow-md"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  ? "bg-primary text-white shadow-md"
+                  : "bg-default-200 text-default-700 hover:bg-default-300"
               }`}
             >
               {label}
@@ -171,7 +171,7 @@ export default function ReportsPage() {
           <div className="mb-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-gray-900">Asistencia del Equipo</h2>
-              <Chip size="sm" className="bg-orange-200 text-orange-800 font-semibold">
+              <Chip size="sm" className="bg-warning-200 text-warning-800 font-semibold">
                 PROMEDIO
               </Chip>
             </div>
@@ -182,8 +182,8 @@ export default function ReportsPage() {
                     <CircularProgress
                       classNames={{
                         svg: "w-32 h-32",
-                        track: "stroke-gray-200",
-                        indicator: "stroke-teal-600",
+                        track: "stroke-default-200",
+                        indicator: "stroke-primary",
                         value: "text-3xl font-bold text-gray-900"
                       }}
                       value={teamAverage}
@@ -216,7 +216,7 @@ export default function ReportsPage() {
           <div>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-gray-900">Rendimiento de Jugadoras</h2>
-              <Chip size="sm" className="bg-teal-200 text-teal-800 font-semibold">
+              <Chip size="sm" className="bg-primary-200 text-primary-800 font-semibold">
                 {activePlayers} Jugadoras en Total
               </Chip>
             </div>
@@ -235,8 +235,8 @@ export default function ReportsPage() {
                             className="w-14 h-14 rounded-lg object-cover"
                           />
                         ) : (
-                          <div className="w-14 h-14 rounded-lg bg-orange-200 flex items-center justify-center">
-                            <span className="text-xl font-bold text-orange-800">
+                          <div className="w-14 h-14 rounded-lg bg-warning-200 flex items-center justify-center">
+                            <span className="text-xl font-bold text-warning-800">
                               {s.player.firstName[0]}
                             </span>
                           </div>
@@ -262,12 +262,12 @@ export default function ReportsPage() {
                           value={s.percentage}
                           classNames={{
                             base: "w-full",
-                            track: "h-1 bg-gray-200",
+                            track: "h-1 bg-default-200",
                             indicator: s.percentage >= 75
-                              ? "bg-teal-600"
+                              ? "bg-primary"
                               : s.percentage >= 50
-                              ? "bg-orange-500"
-                              : "bg-red-500"
+                              ? "bg-warning"
+                              : "bg-danger"
                           }}
                         />
                       </div>

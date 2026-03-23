@@ -165,7 +165,7 @@ export default function PlayersPage() {
           value={searchQuery}
           onValueChange={setSearchQuery}
           classNames={{
-            inputWrapper: "bg-white border-2 border-gray-200"
+            inputWrapper: "bg-white border-2 border-default-200"
           }}
         />
       </div>
