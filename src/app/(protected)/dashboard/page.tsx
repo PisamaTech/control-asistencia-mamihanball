@@ -142,24 +142,22 @@ export default function DashboardPage() {
                       {/* Detalles */}
                       <div className="flex-1 min-w-0">
                         <h3 className="font-semibold text-gray-900 truncate mb-1">
-                          {session.name || "Sesión"}
+                          {sessionType.label}
                         </h3>
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className={`text-xs font-semibold px-2 py-0.5 rounded ${sessionType.color}`}>
-                            {sessionType.label}
-                          </span>
-                          <span className="text-xs text-gray-500">
-                            {session.location || "Sin ubicación"}
-                          </span>
+                          {session.notes && (
+                            <span className="text-xs text-gray-500 truncate">
+                              {session.notes}
+                            </span>
+                          )}
                         </div>
                       </div>
 
-                      {/* Asistencia */}
+                      {/* Fecha corta */}
                       <div className="flex flex-col items-end flex-shrink-0">
-                        <span className="text-xl font-bold text-gray-900">
-                          {session.presentCount || 0}/{session.totalPlayers || 0}
+                        <span className="text-xs text-gray-500 uppercase">
+                          {date.toLocaleDateString("es", { weekday: "short" })}
                         </span>
-                        <span className="text-xs text-gray-500 uppercase">PRESENTES</span>
                       </div>
                     </div>
                   </CardBody>
