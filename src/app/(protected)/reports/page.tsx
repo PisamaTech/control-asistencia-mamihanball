@@ -97,11 +97,11 @@ export default function ReportsPage() {
     <div className="max-w-2xl mx-auto w-full p-4 pb-24">
       {/* Header */}
       <div className="mb-6">
-        <p className="text-sm font-semibold tracking-wider text-gray-500 uppercase mb-1">
+        <p className="text-sm font-semibold tracking-wider text-default-500 uppercase mb-1">
           RENDIMIENTO
         </p>
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-gray-900">Reportes</h1>
+          <h1 className="text-3xl font-bold text-foreground">Reportes</h1>
           <Button
             size="sm"
             className="bg-teal-600 text-white font-semibold"
@@ -123,7 +123,7 @@ export default function ReportsPage() {
 
       {/* Period Selector */}
       <div className="mb-6">
-        <p className="text-sm font-semibold text-gray-900 mb-3">Período</p>
+        <p className="text-sm font-semibold text-foreground mb-3">Período</p>
         <div className="flex flex-wrap gap-2">
           {(Object.entries(PERIOD_LABELS) as [ReportPeriod, string][]).map(([key, label]) => (
             <button
@@ -132,7 +132,7 @@ export default function ReportsPage() {
               className={`px-4 py-2 rounded-lg font-medium transition-all ${
                 period === key
                   ? "bg-teal-600 text-white shadow-md"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  : "bg-default-200 text-default-700 hover:bg-default-300"
               }`}
             >
               {label}
@@ -143,7 +143,7 @@ export default function ReportsPage() {
 
       {/* Type Selector */}
       <div className="mb-6">
-        <p className="text-sm font-semibold text-gray-900 mb-3">Tipo</p>
+        <p className="text-sm font-semibold text-foreground mb-3">Tipo</p>
         <div className="flex flex-wrap gap-2">
           {(Object.entries(SESSION_TYPE_LABELS) as [ReportSessionType, string][]).map(([key, label]) => (
             <button
@@ -152,7 +152,7 @@ export default function ReportsPage() {
               className={`px-4 py-2 rounded-lg font-medium transition-all ${
                 sessionType === key
                   ? "bg-teal-600 text-white shadow-md"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  : "bg-default-200 text-default-700 hover:bg-default-300"
               }`}
             >
               {label}
@@ -162,48 +162,48 @@ export default function ReportsPage() {
       </div>
 
       {loading ? (
-        <p className="text-center text-gray-400 py-8">Cargando...</p>
+        <p className="text-center text-default-400 py-8">Cargando...</p>
       ) : stats.length === 0 ? (
-        <p className="text-center text-gray-400 py-8">Sin datos para este período.</p>
+        <p className="text-center text-default-400 py-8">Sin datos para este período.</p>
       ) : (
         <>
           {/* Team Attendance */}
           <div className="mb-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-gray-900">Asistencia del Equipo</h2>
-              <Chip size="sm" className="bg-orange-200 text-orange-800 font-semibold">
+              <h2 className="text-xl font-bold text-foreground">Asistencia del Equipo</h2>
+              <Chip size="sm" className="bg-orange-200 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300 font-semibold">
                 PROMEDIO
               </Chip>
             </div>
-            <Card className="bg-white shadow-md">
+            <Card className="shadow-md">
               <CardBody className="py-6">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <CircularProgress
                       classNames={{
                         svg: "w-32 h-32",
-                        track: "stroke-gray-200",
+                        track: "stroke-default-200",
                         indicator: "stroke-teal-600",
-                        value: "text-3xl font-bold text-gray-900"
+                        value: "text-3xl font-bold text-foreground"
                       }}
                       value={teamAverage}
                       strokeWidth={4}
                       showValueLabel={true}
                       formatOptions={{ style: "percent", minimumFractionDigits: 0, maximumFractionDigits: 0 }}
                     />
-                    <p className="text-center text-xs text-gray-500 mt-2 font-medium">ASISTENCIA</p>
+                    <p className="text-center text-xs text-default-500 mt-2 font-medium">ASISTENCIA</p>
                   </div>
                   <div className="flex-1 space-y-4">
                     <div>
-                      <p className="text-sm text-gray-600">Presente</p>
-                      <p className="text-2xl font-bold text-gray-900">
-                        {totalSessions} <span className="text-sm font-normal text-gray-500">sesiones</span>
+                      <p className="text-sm text-default-600">Presente</p>
+                      <p className="text-2xl font-bold text-foreground">
+                        {totalSessions} <span className="text-sm font-normal text-default-500">sesiones</span>
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">Excusadas</p>
-                      <p className="text-2xl font-bold text-gray-900">
-                        0 <span className="text-sm font-normal text-gray-500">sesiones</span>
+                      <p className="text-sm text-default-600">Excusadas</p>
+                      <p className="text-2xl font-bold text-foreground">
+                        0 <span className="text-sm font-normal text-default-500">sesiones</span>
                       </p>
                     </div>
                   </div>
@@ -215,14 +215,14 @@ export default function ReportsPage() {
           {/* Player Performance */}
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-gray-900">Rendimiento de Jugadoras</h2>
-              <Chip size="sm" className="bg-teal-200 text-teal-800 font-semibold">
+              <h2 className="text-xl font-bold text-foreground">Rendimiento de Jugadoras</h2>
+              <Chip size="sm" className="bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300 font-semibold">
                 {activePlayers} Jugadoras en Total
               </Chip>
             </div>
             <div className="space-y-3">
               {stats.map((s) => (
-                <Card key={s.player.id} className="bg-white shadow-sm">
+                <Card key={s.player.id} className="shadow-sm">
                   <CardBody className="py-4">
                     <div className="flex items-center gap-4">
                       {/* Avatar */}
@@ -235,8 +235,8 @@ export default function ReportsPage() {
                             className="w-14 h-14 rounded-lg object-cover"
                           />
                         ) : (
-                          <div className="w-14 h-14 rounded-lg bg-orange-200 flex items-center justify-center">
-                            <span className="text-xl font-bold text-orange-800">
+                          <div className="w-14 h-14 rounded-lg bg-orange-100 dark:bg-orange-900/40 flex items-center justify-center">
+                            <span className="text-xl font-bold text-orange-700 dark:text-orange-300">
                               {s.player.firstName[0]}
                             </span>
                           </div>
@@ -245,24 +245,24 @@ export default function ReportsPage() {
 
                       {/* Player Info */}
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-gray-900 text-base">
+                        <p className="font-semibold text-foreground text-base">
                           {s.player.firstName} {s.player.lastName}
                         </p>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-default-500">
                           {s.totalAttended}/{s.totalSessions} Sesiones
                         </p>
                       </div>
 
                       {/* Percentage and Progress */}
                       <div className="flex-shrink-0 text-right" style={{ width: "80px" }}>
-                        <p className="text-xl font-bold text-gray-900 mb-1">
+                        <p className="text-xl font-bold text-foreground mb-1">
                           {s.percentage}%
                         </p>
                         <Progress
                           value={s.percentage}
                           classNames={{
                             base: "w-full",
-                            track: "h-1 bg-gray-200",
+                            track: "h-1 bg-default-200",
                             indicator: s.percentage >= 75
                               ? "bg-teal-600"
                               : s.percentage >= 50
