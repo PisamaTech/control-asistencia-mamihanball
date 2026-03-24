@@ -122,6 +122,8 @@ export default function DashboardPage() {
         ) : (
           <div className="flex flex-col gap-3">
             {recentSessions.map((session, idx) => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const s = session as any;
               const date = new Date(session.date);
               const day = date.getDate();
               const month = date.toLocaleDateString("es", { month: "short" }).toUpperCase();
@@ -142,14 +144,14 @@ export default function DashboardPage() {
                       {/* Detalles */}
                       <div className="flex-1 min-w-0">
                         <h3 className="font-semibold text-foreground truncate mb-1">
-                          {session.name || "Sesión"}
+                          {s.name || "Sesión"}
                         </h3>
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className={`text-xs font-semibold px-2 py-0.5 rounded ${sessionType.color}`}>
                             {sessionType.label}
                           </span>
                           <span className="text-xs text-default-500">
-                            {session.location || "Sin ubicación"}
+                            {s.location || "Sin ubicación"}
                           </span>
                         </div>
                       </div>
@@ -157,7 +159,7 @@ export default function DashboardPage() {
                       {/* Asistencia */}
                       <div className="flex flex-col items-end flex-shrink-0">
                         <span className="text-xl font-bold text-foreground">
-                          {session.presentCount || 0}/{session.totalPlayers || 0}
+                          {s.presentCount || 0}/{s.totalPlayers || 0}
                         </span>
                         <span className="text-xs text-default-500 uppercase">PRESENTES</span>
                       </div>
