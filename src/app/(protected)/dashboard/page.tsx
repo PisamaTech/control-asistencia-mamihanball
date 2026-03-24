@@ -6,8 +6,8 @@ import { useRouter } from "next/navigation";
 import { getDashboardStats, DashboardStats } from "@/services/dashboardService";
 
 const SESSION_TYPE_LABELS: Record<string, { label: string; color: string }> = {
-  practice: { label: "PRÁCTICA", color: "bg-teal-100 text-teal-700" },
-  game: { label: "PARTIDO", color: "bg-orange-100 text-orange-700" },
+  practice: { label: "PRÁCTICA", color: "bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300" },
+  game: { label: "PARTIDO", color: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300" },
 };
 
 export default function DashboardPage() {
@@ -30,14 +30,14 @@ export default function DashboardPage() {
   const teamAverage = stats?.teamAveragePercentage || 0;
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-background min-h-screen">
       <div className="max-w-2xl mx-auto w-full flex flex-col gap-6 p-6 pb-24">
       {/* Encabezado */}
       <div>
         <p className="text-sm font-semibold tracking-wider text-teal-700 uppercase mb-1">
           PANEL DE CONTROL
         </p>
-        <h1 className="text-2xl font-bold text-gray-900">¡Hola, Coach!</h1>
+        <h1 className="text-2xl font-bold text-foreground">¡Hola, Coach!</h1>
         <p className="text-lg font-semibold text-teal-600">Listo para la cancha.</p>
       </div>
 
@@ -82,7 +82,7 @@ export default function DashboardPage() {
               JUGADORAS<br />ACTIVAS
             </p>
             <div className="flex items-center gap-2">
-              <span className="text-4xl font-bold text-gray-900">{activePlayers}</span>
+              <span className="text-4xl font-bold text-foreground">{activePlayers}</span>
               <svg className="w-6 h-6 text-teal-600" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
               </svg>
@@ -97,7 +97,7 @@ export default function DashboardPage() {
               ASISTENCIA<br />PROMEDIO
             </p>
             <div className="flex items-center gap-2">
-              <span className="text-4xl font-bold text-gray-900">{teamAverage}%</span>
+              <span className="text-4xl font-bold text-foreground">{teamAverage}%</span>
               <svg className="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
               </svg>
@@ -109,7 +109,7 @@ export default function DashboardPage() {
       {/* Sesiones Recientes */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-gray-900">Sesiones Recientes</h2>
+          <h2 className="text-lg font-bold text-foreground">Sesiones Recientes</h2>
           <button className="text-teal-600 text-sm font-semibold hover:text-teal-700">
             VER TODO
           </button>
@@ -125,7 +125,7 @@ export default function DashboardPage() {
               const date = new Date(session.date);
               const day = date.getDate();
               const month = date.toLocaleDateString("es", { month: "short" }).toUpperCase();
-              const sessionType = SESSION_TYPE_LABELS[session.type] || { label: session.type.toUpperCase(), color: "bg-gray-100 text-gray-700" };
+              const sessionType = SESSION_TYPE_LABELS[session.type] || { label: session.type.toUpperCase(), color: "bg-default-100 text-default-700" };
               const borderColors = ["border-teal-500", "border-orange-500", "border-teal-600"];
               const borderColor = borderColors[idx % borderColors.length];
 
@@ -135,20 +135,20 @@ export default function DashboardPage() {
                     <div className="flex items-center gap-4 p-4">
                       {/* Fecha */}
                       <div className={`flex flex-col items-center justify-center w-14 h-14 rounded-full border-2 ${borderColor} flex-shrink-0`}>
-                        <span className="text-xl font-bold text-gray-900">{day}</span>
-                        <span className="text-xs text-gray-500">{month}</span>
+                        <span className="text-xl font-bold text-foreground">{day}</span>
+                        <span className="text-xs text-default-500">{month}</span>
                       </div>
 
                       {/* Detalles */}
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-gray-900 truncate mb-1">
+                        <h3 className="font-semibold text-foreground truncate mb-1">
                           {session.name || "Sesión"}
                         </h3>
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className={`text-xs font-semibold px-2 py-0.5 rounded ${sessionType.color}`}>
                             {sessionType.label}
                           </span>
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-default-500">
                             {session.location || "Sin ubicación"}
                           </span>
                         </div>
@@ -156,10 +156,10 @@ export default function DashboardPage() {
 
                       {/* Asistencia */}
                       <div className="flex flex-col items-end flex-shrink-0">
-                        <span className="text-xl font-bold text-gray-900">
+                        <span className="text-xl font-bold text-foreground">
                           {session.presentCount || 0}/{session.totalPlayers || 0}
                         </span>
-                        <span className="text-xs text-gray-500 uppercase">PRESENTES</span>
+                        <span className="text-xs text-default-500 uppercase">PRESENTES</span>
                       </div>
                     </div>
                   </CardBody>
