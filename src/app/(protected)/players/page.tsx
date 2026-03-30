@@ -16,7 +16,13 @@ import {
   SelectItem,
   useDisclosure,
 } from "@heroui/react";
-import { getPlayers, addPlayer, updatePlayer, togglePlayerStatus, Player } from "@/services/playerService";
+import {
+  getPlayers,
+  addPlayer,
+  updatePlayer,
+  togglePlayerStatus,
+  Player,
+} from "@/services/playerService";
 import { compressImage } from "@/lib/imageCompressor";
 import { getDescriptor } from "@/lib/faceRecognition";
 import { uploadPlayerPhoto } from "@/services/storageService";
@@ -28,12 +34,37 @@ export default function PlayersPage() {
   const [savingStatus, setSavingStatus] = useState("");
   const [selected, setSelected] = useState<Player | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [form, setForm] = useState({ firstName: "", lastName: "", jerseyNumber: "", position: "" });
-  const [photoFiles, setPhotoFiles] = useState<(File | null)[]>([null, null, null]);
-  const [photoPreviews, setPhotoPreviews] = useState<(string | null)[]>([null, null, null]);
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    jerseyNumber: "",
+    position: "",
+  });
+  const [photoFiles, setPhotoFiles] = useState<(File | null)[]>([
+    null,
+    null,
+    null,
+  ]);
+  const [photoPreviews, setPhotoPreviews] = useState<(string | null)[]>([
+    null,
+    null,
+    null,
+  ]);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  useEffect(() => { load(); }, []);
+  const inputStyles = {
+    inputWrapper:
+      "bg-content1 border-2 border-default-200 group-data-[focus=true]:border-transparent group-data-[focus=true]:bg-content1 group-data-[focus=true]:ring-0 group-data-[focus-visible=true]:ring-0 group-data-[focus-visible=true]:ring-offset-0 shadow-none after:hidden",
+    input: "focus:ring-0 focus-visible:ring-0 outline-none",
+  };
+
+  const selectStyles = {
+    trigger: inputStyles.inputWrapper,
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
 
   async function load() {
     setLoading(true);
@@ -55,7 +86,7 @@ export default function PlayersPage() {
       firstName: player.firstName,
       lastName: player.lastName,
       jerseyNumber: player.jerseyNumber?.toString() ?? "",
-      position: player.position ?? ""
+      position: player.position ?? "",
     });
     setPhotoFiles([null, null, null]);
     setPhotoPreviews([...player.referencePhotoURLs.slice(0, 3)]);
@@ -74,7 +105,7 @@ export default function PlayersPage() {
 
   async function processPhotos(
     playerId: string,
-    baseURLs: string[]
+    baseURLs: string[],
   ): Promise<{ photoURLs: string[]; descriptors: Record<string, number[]> }> {
     const photoURLs = [...baseURLs];
     const descriptors: Record<string, number[]> = {};
@@ -107,13 +138,15 @@ export default function PlayersPage() {
     setSaving(true);
     setSavingStatus("Guardando...");
     try {
-      const jerseyNumber = form.jerseyNumber ? parseInt(form.jerseyNumber, 10) : undefined;
+      const jerseyNumber = form.jerseyNumber
+        ? parseInt(form.jerseyNumber, 10)
+        : undefined;
       const position = form.position.trim() || undefined;
 
       if (selected) {
         const { photoURLs, descriptors } = await processPhotos(
           selected.id,
-          selected.referencePhotoURLs
+          selected.referencePhotoURLs,
         );
         await updatePlayer(selected.id, {
           firstName: form.firstName,
@@ -128,11 +161,18 @@ export default function PlayersPage() {
           firstName: form.firstName,
           lastName: form.lastName,
           jerseyNumber,
-          position
+          position,
         });
-        const { photoURLs, descriptors } = await processPhotos(newId, ["", "", ""]);
+        const { photoURLs, descriptors } = await processPhotos(newId, [
+          "",
+          "",
+          "",
+        ]);
         if (photoURLs.some((u) => u)) {
-          await updatePlayer(newId, { referencePhotoURLs: photoURLs, faceDescriptors: descriptors });
+          await updatePlayer(newId, {
+            referencePhotoURLs: photoURLs,
+            faceDescriptors: descriptors,
+          });
         }
       }
       await load();
@@ -162,7 +202,9 @@ export default function PlayersPage() {
     <div className="max-w-2xl mx-auto w-full p-4">
       <div className="mb-4 flex items-center justify-between">
         <h1 className="text-xl font-bold">Jugadoras</h1>
-        <Button color="primary" size="sm" onPress={openNew}>AGREGAR JUGADORA</Button>
+        <Button color="primary" size="sm" onPress={openNew}>
+          AGREGAR JUGADORA
+        </Button>
       </div>
 
       <div className="mb-4">
@@ -170,9 +212,7 @@ export default function PlayersPage() {
           placeholder="Buscar jugadora..."
           value={searchQuery}
           onValueChange={setSearchQuery}
-          classNames={{
-            inputWrapper: "bg-content1 border-2 border-default-200"
-          }}
+          classNames={inputStyles}
         />
       </div>
 
@@ -180,7 +220,9 @@ export default function PlayersPage() {
         <p className="text-center text-default-400">Cargando...</p>
       ) : filteredPlayers.length === 0 ? (
         <p className="text-center text-default-400">
-          {searchQuery ? "No se encontraron jugadoras." : "No hay jugadoras registradas."}
+          {searchQuery
+            ? "No se encontraron jugadoras."
+            : "No hay jugadoras registradas."}
         </p>
       ) : (
         <div className="flex flex-col gap-3">
@@ -190,14 +232,20 @@ export default function PlayersPage() {
                 <div className="flex items-center gap-3">
                   {p.referencePhotoURLs?.[0] ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={p.referencePhotoURLs[0]} alt={p.firstName} className="h-12 w-12 rounded-full object-cover" />
+                    <img
+                      src={p.referencePhotoURLs[0]}
+                      alt={p.firstName}
+                      className="h-12 w-12 rounded-full object-cover"
+                    />
                   ) : (
                     <div className="flex h-12 w-12 items-center justify-center rounded-full bg-default-200 text-lg font-bold text-default-500">
                       {p.firstName[0]}
                     </div>
                   )}
                   <div>
-                    <p className="font-semibold">{p.firstName} {p.lastName}</p>
+                    <p className="font-semibold">
+                      {p.firstName} {p.lastName}
+                    </p>
                     <div className="flex items-center gap-1 text-xs text-default-500">
                       {p.position && <span>{p.position.toUpperCase()}</span>}
                       {p.position && p.jerseyNumber && <span>•</span>}
@@ -206,8 +254,15 @@ export default function PlayersPage() {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button size="sm" variant="flat" onPress={() => openEdit(p)}>Editar</Button>
-                  <Button size="sm" variant="flat" color={p.status === "active" ? "warning" : "success"} onPress={() => handleToggle(p)}>
+                  <Button size="sm" variant="flat" onPress={() => openEdit(p)}>
+                    Editar
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="flat"
+                    color={p.status === "active" ? "warning" : "success"}
+                    onPress={() => handleToggle(p)}
+                  >
                     {p.status === "active" ? "Desactivar" : "Activar"}
                   </Button>
                 </div>
@@ -219,23 +274,44 @@ export default function PlayersPage() {
 
       <Modal isOpen={isOpen} onClose={onClose} placement="bottom-center">
         <ModalContent>
-          <ModalHeader>{selected ? "Editar jugadora" : "Nueva jugadora"}</ModalHeader>
+          <ModalHeader>
+            {selected ? "Editar jugadora" : "Nueva jugadora"}
+          </ModalHeader>
           <ModalBody className="flex flex-col gap-4">
-            <Input label="Nombre" value={form.firstName} onValueChange={(v) => setForm((f) => ({ ...f, firstName: v }))} isRequired />
-            <Input label="Apellido" value={form.lastName} onValueChange={(v) => setForm((f) => ({ ...f, lastName: v }))} isRequired />
+            <Input
+              label="Nombre"
+              value={form.firstName}
+              onValueChange={(v) => setForm((f) => ({ ...f, firstName: v }))}
+              isRequired
+              classNames={inputStyles}
+            />
+            <Input
+              label="Apellido"
+              value={form.lastName}
+              onValueChange={(v) => setForm((f) => ({ ...f, lastName: v }))}
+              isRequired
+              classNames={inputStyles}
+            />
             <div className="grid grid-cols-2 gap-3">
               <Input
                 label="Número de camiseta"
                 type="number"
                 value={form.jerseyNumber}
-                onValueChange={(v) => setForm((f) => ({ ...f, jerseyNumber: v }))}
+                onValueChange={(v) =>
+                  setForm((f) => ({ ...f, jerseyNumber: v }))
+                }
                 placeholder="Ej: 10"
+                classNames={inputStyles}
               />
               <Select
                 label="Posición"
+                classNames={selectStyles}
                 selectedKeys={form.position ? [form.position] : []}
                 onSelectionChange={(keys) =>
-                  setForm((f) => ({ ...f, position: Array.from(keys)[0] as string ?? "" }))
+                  setForm((f) => ({
+                    ...f,
+                    position: (Array.from(keys)[0] as string) ?? "",
+                  }))
                 }
               >
                 {[
@@ -244,34 +320,55 @@ export default function PlayersPage() {
                   { key: "armadora", label: "Armadora" },
                   { key: "central", label: "Central" },
                   { key: "pivote", label: "Pivote" },
-                  ...(form.position === "lateral" ? [{ key: "lateral", label: "Lateral" }] : []),
-                  ...(form.position === "extremo" ? [{ key: "extremo", label: "Extremo" }] : []),
+                  ...(form.position === "lateral"
+                    ? [{ key: "lateral", label: "Lateral" }]
+                    : []),
+                  ...(form.position === "extremo"
+                    ? [{ key: "extremo", label: "Extremo" }]
+                    : []),
                 ].map((opt) => (
                   <SelectItem key={opt.key}>{opt.label}</SelectItem>
                 ))}
               </Select>
             </div>
             <div>
-              <p className="mb-2 text-sm font-medium text-default-600">Fotos de referencia (3)</p>
+              <p className="mb-2 text-sm font-medium text-default-600">
+                Fotos de referencia (3)
+              </p>
               <div className="grid grid-cols-3 gap-2">
                 {[0, 1, 2].map((i) => (
                   <label key={i} className="cursor-pointer">
-                    <div className="flex h-24 w-full items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-default-300 bg-default-50">
+                    <div className="flex h-32 w-full items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-default-300 bg-default-50">
                       {photoPreviews[i] ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={photoPreviews[i]!} alt={`Foto ${i + 1}`} className="h-full w-full object-cover" />
+                        <img
+                          src={photoPreviews[i]!}
+                          alt={`Foto ${i + 1}`}
+                          className="h-full w-full object-cover"
+                        />
                       ) : (
-                        <span className="text-xs text-default-400">Foto {i + 1}</span>
+                        <span className="text-xs text-default-400">
+                          Foto {i + 1}
+                        </span>
                       )}
                     </div>
-                    <input type="file" accept="image/*" className="hidden" onChange={(e) => handlePhotoChange(i, e.target.files?.[0] ?? null)} />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) =>
+                        handlePhotoChange(i, e.target.files?.[0] ?? null)
+                      }
+                    />
                   </label>
                 ))}
               </div>
             </div>
           </ModalBody>
           <ModalFooter>
-            <Button variant="flat" onPress={onClose}>Cancelar</Button>
+            <Button variant="flat" onPress={onClose}>
+              Cancelar
+            </Button>
             <Button color="primary" onPress={handleSave} isLoading={saving}>
               {saving ? savingStatus || "Guardando..." : "Guardar"}
             </Button>

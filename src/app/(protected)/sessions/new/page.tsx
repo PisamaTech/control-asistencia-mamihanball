@@ -34,7 +34,9 @@ export default function NewSessionPage() {
   const [sessionType, setSessionType] = useState<"practice" | "game">(
     "practice",
   );
-  const [sessionDate, setSessionDate] = useState<DateValue>(today(getLocalTimeZone()));
+  const [sessionDate, setSessionDate] = useState<DateValue>(
+    today(getLocalTimeZone()),
+  );
   const [notes, setNotes] = useState("");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
@@ -81,7 +83,11 @@ export default function NewSessionPage() {
       const manualIds = checkedIds.filter((id) => !recognizedIds.includes(id));
 
       // Convertir DateValue a Date de JavaScript
-      const sessionDateJs = new Date(sessionDate.year, sessionDate.month - 1, sessionDate.day);
+      const sessionDateJs = new Date(
+        sessionDate.year,
+        sessionDate.month - 1,
+        sessionDate.day,
+      );
 
       await addSession({
         date: sessionDateJs,
@@ -101,6 +107,12 @@ export default function NewSessionPage() {
       setSaving(false);
     }
   }
+
+  const inputStyles = {
+    inputWrapper:
+      "bg-content1 border-2 border-default-200 group-data-[focus=true]:border-transparent group-data-[focus=true]:bg-content1 group-data-[focus=true]:ring-0 group-data-[focus-visible=true]:ring-0 group-data-[focus-visible=true]:ring-offset-0 shadow-none after:hidden",
+    input: "focus:ring-0 focus-visible:ring-0 outline-none",
+  };
 
   if (step === "processing") {
     return (
@@ -291,8 +303,11 @@ export default function NewSessionPage() {
             classNames={{
               base: "w-full",
               label: "text-sm font-semibold text-foreground mb-2",
-              inputWrapper: "bg-content1 border-2 border-default-200 h-12",
-              input: "text-default-700"
+              inputWrapper: `${inputStyles.inputWrapper} h-12 relative`,
+              input:
+                "ml-8 text-default-700 focus:ring-0 focus-visible:ring-0 outline-none pointer-events-none",
+              selectorButton:
+                "absolute w-full h-full z-10 bg-transparent hover:w-[99%] bg-transparent justify-start px-3 min-w-0 data-[pressed=true]:scale-100 shadow-none",
             }}
           />
         </div>
@@ -404,8 +419,9 @@ export default function NewSessionPage() {
             onValueChange={setNotes}
             minRows={3}
             classNames={{
-              input: "text-default-700",
-              inputWrapper: "bg-content1 border-2 border-default-200",
+              input:
+                "text-default-700 focus:ring-0 focus-visible:ring-0 outline-none",
+              inputWrapper: inputStyles.inputWrapper,
             }}
           />
         </div>
