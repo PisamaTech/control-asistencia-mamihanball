@@ -31,7 +31,7 @@ describe("getPlayers", () => {
             lastName: "García",
             status: "active",
             referencePhotoURLs: [],
-            faceDescriptors: [],
+            faceDescriptors: {},
             createdAt: null,
           }),
         },
@@ -42,7 +42,7 @@ describe("getPlayers", () => {
             lastName: "López",
             status: "inactive",
             referencePhotoURLs: [],
-            faceDescriptors: [],
+            faceDescriptors: {},
             createdAt: null,
           }),
         },
@@ -70,7 +70,7 @@ describe("addPlayer", () => {
         lastName: "Martínez",
         status: "active",
         referencePhotoURLs: [],
-        faceDescriptors: [],
+        faceDescriptors: {},
       })
     );
     expect(id).toBe("new-player-id");

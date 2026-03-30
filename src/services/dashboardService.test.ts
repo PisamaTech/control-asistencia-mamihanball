@@ -18,7 +18,7 @@ const mockGetSessions = vi.mocked(getSessions);
 beforeEach(() => vi.clearAllMocks());
 
 function makePlayer(id: string, name: string) {
-  return { id, firstName: name, lastName: "Test", status: "active" as const, referencePhotoURLs: [], faceDescriptors: [], createdAt: null };
+  return { id, firstName: name, lastName: "Test", status: "active" as const, referencePhotoURLs: [], faceDescriptors: {}, createdAt: null };
 }
 
 function makeStat(playerId: string, name: string, percentage: number) {

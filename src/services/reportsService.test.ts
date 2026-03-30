@@ -27,7 +27,7 @@ const makePlayerDoc = (id: string, name: string) => ({
     lastName: "Test",
     status: "active",
     referencePhotoURLs: [],
-    faceDescriptors: [],
+    faceDescriptors: {},
     createdAt: null,
   }),
 });

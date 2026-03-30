@@ -75,9 +75,9 @@ export default function PlayersPage() {
   async function processPhotos(
     playerId: string,
     baseURLs: string[]
-  ): Promise<{ photoURLs: string[]; descriptors: number[][] }> {
+  ): Promise<{ photoURLs: string[]; descriptors: Record<string, number[]> }> {
     const photoURLs = [...baseURLs];
-    const descriptors: (number[] | null)[] = [null, null, null];
+    const descriptors: Record<string, number[]> = {};
 
     for (let i = 0; i < 3; i++) {
       const file = photoFiles[i];
@@ -88,14 +88,18 @@ export default function PlayersPage() {
       photoURLs[i] = await uploadPlayerPhoto(playerId, i + 1, compressed);
 
       setSavingStatus(`Generando descriptor ${i + 1} de 3...`);
-      descriptors[i] = await getDescriptor(compressed);
+      descriptors[String(i)] = await getDescriptor(compressed);
     }
 
     // Merge with existing descriptors for unchanged photos
-    const existing = selected?.faceDescriptors ?? [];
-    const finalDescriptors = descriptors.map((d, i) => d ?? existing[i] ?? []);
+    const existing = selected?.faceDescriptors ?? {};
+    for (let i = 0; i < 3; i++) {
+      if (!descriptors[String(i)] && existing[String(i)]) {
+        descriptors[String(i)] = existing[String(i)];
+      }
+    }
 
-    return { photoURLs, descriptors: finalDescriptors };
+    return { photoURLs, descriptors };
   }
 
   async function handleSave() {
@@ -234,11 +238,17 @@ export default function PlayersPage() {
                   setForm((f) => ({ ...f, position: Array.from(keys)[0] as string ?? "" }))
                 }
               >
-                <SelectItem key="arquera">Arquera</SelectItem>
-                <SelectItem key="extremo">Extremo</SelectItem>
-                <SelectItem key="lateral">Lateral</SelectItem>
-                <SelectItem key="central">Central</SelectItem>
-                <SelectItem key="pivote">Pivote</SelectItem>
+                {[
+                  { key: "arquera", label: "Arquera" },
+                  { key: "puntera", label: "Puntera" },
+                  { key: "armadora", label: "Armadora" },
+                  { key: "central", label: "Central" },
+                  { key: "pivote", label: "Pivote" },
+                  ...(form.position === "lateral" ? [{ key: "lateral", label: "Lateral" }] : []),
+                  ...(form.position === "extremo" ? [{ key: "extremo", label: "Extremo" }] : []),
+                ].map((opt) => (
+                  <SelectItem key={opt.key}>{opt.label}</SelectItem>
+                ))}
               </Select>
             </div>
             <div>

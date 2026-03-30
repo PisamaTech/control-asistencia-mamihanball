@@ -29,13 +29,15 @@ const closeDescriptor = new Array(128).fill(0);
 const farDescriptor = new Array(128).fill(1);
 
 function makePlayer(id: string, descriptors: number[][]): Player {
+  const faceDescriptors: Record<string, number[]> = {};
+  descriptors.forEach((d, i) => { faceDescriptors[String(i)] = d; });
   return {
     id,
     firstName: "Test",
     lastName: "Player",
     status: "active",
     referencePhotoURLs: [],
-    faceDescriptors: descriptors,
+    faceDescriptors,
     createdAt: null,
   };
 }

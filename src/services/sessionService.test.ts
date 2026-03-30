@@ -126,8 +126,8 @@ describe("getSessionDetail", () => {
       ],
     } as never).mockResolvedValueOnce({
       docs: [
-        { id: "p1", data: () => ({ firstName: "Ana", lastName: "García", status: "active", referencePhotoURLs: [], faceDescriptors: [], createdAt: null }) },
-        { id: "p2", data: () => ({ firstName: "Laura", lastName: "López", status: "active", referencePhotoURLs: [], faceDescriptors: [], createdAt: null }) },
+        { id: "p1", data: () => ({ firstName: "Ana", lastName: "García", status: "active", referencePhotoURLs: [], faceDescriptors: {}, createdAt: null }) },
+        { id: "p2", data: () => ({ firstName: "Laura", lastName: "López", status: "active", referencePhotoURLs: [], faceDescriptors: {}, createdAt: null }) },
       ],
     } as never);
 

@@ -18,7 +18,7 @@ export type Player = {
   position?: string;
   status: PlayerStatus;
   referencePhotoURLs: string[];
-  faceDescriptors: number[][];
+  faceDescriptors: Record<string, number[]>;
   createdAt: Date | null;
 };
 
@@ -44,7 +44,7 @@ export async function addPlayer(data: NewPlayerData): Promise<string> {
     position: data.position,
     status: "active",
     referencePhotoURLs: [],
-    faceDescriptors: [],
+    faceDescriptors: {},
     createdAt: serverTimestamp(),
   });
   return ref.id;

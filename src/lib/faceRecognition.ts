@@ -67,10 +67,11 @@ export async function recognizeFaces(
   const recognized: string[] = [];
 
   for (const player of players) {
-    if (!player.faceDescriptors?.length) continue;
+    const descriptors = Object.values(player.faceDescriptors ?? {});
+    if (!descriptors.length) continue;
 
     const matched = detections.some((detected) =>
-      player.faceDescriptors.some(
+      descriptors.some(
         (ref) =>
           euclideanDistance(ref, Array.from(detected.descriptor)) <=
           MATCH_THRESHOLD
