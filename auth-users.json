@@ -1,0 +1,19 @@
+{"users": [
+{
+  "localId": "4OZ6hzvovWf8xEA288LwwwNzBpE3",
+  "email": "titantelo@gmail.com",
+  "emailVerified": true,
+  "displayName": "Gaston Campo",
+  "photoUrl": "https://lh3.googleusercontent.com/a/ACg8ocIDHPIGYryMOwZUj7obKpHDai579EZwoS33X5zH2g2kpYf6ekse0Q=s96-c",
+  "lastSignedInAt": "1774577128768",
+  "createdAt": "1774241984268",
+  "providerUserInfo": [
+    {
+      "providerId": "google.com",
+      "rawId": "118386808583031150899",
+      "email": "titantelo@gmail.com",
+      "displayName": "Gaston Campo",
+      "photoUrl": "https://lh3.googleusercontent.com/a/ACg8ocIDHPIGYryMOwZUj7obKpHDai579EZwoS33X5zH2g2kpYf6ekse0Q=s96-c"
+    }
+  ]
+}]}
