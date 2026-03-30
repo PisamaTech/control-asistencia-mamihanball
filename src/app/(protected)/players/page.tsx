@@ -12,6 +12,8 @@ import {
   ModalFooter,
   ModalHeader,
   Input,
+  Select,
+  SelectItem,
   useDisclosure,
 } from "@heroui/react";
 import { getPlayers, addPlayer, updatePlayer, togglePlayerStatus, Player } from "@/services/playerService";
@@ -165,7 +167,7 @@ export default function PlayersPage() {
           value={searchQuery}
           onValueChange={setSearchQuery}
           classNames={{
-            inputWrapper: "bg-white border-2 border-default-200"
+            inputWrapper: "bg-content1 border-2 border-default-200"
           }}
         />
       </div>
@@ -225,12 +227,19 @@ export default function PlayersPage() {
                 onValueChange={(v) => setForm((f) => ({ ...f, jerseyNumber: v }))}
                 placeholder="Ej: 10"
               />
-              <Input
+              <Select
                 label="Posición"
-                value={form.position}
-                onValueChange={(v) => setForm((f) => ({ ...f, position: v }))}
-                placeholder="Ej: Armadora"
-              />
+                selectedKeys={form.position ? [form.position] : []}
+                onSelectionChange={(keys) =>
+                  setForm((f) => ({ ...f, position: Array.from(keys)[0] as string ?? "" }))
+                }
+              >
+                <SelectItem key="arquera">Arquera</SelectItem>
+                <SelectItem key="extremo">Extremo</SelectItem>
+                <SelectItem key="lateral">Lateral</SelectItem>
+                <SelectItem key="central">Central</SelectItem>
+                <SelectItem key="pivote">Pivote</SelectItem>
+              </Select>
             </div>
             <div>
               <p className="mb-2 text-sm font-medium text-default-600">Fotos de referencia (3)</p>

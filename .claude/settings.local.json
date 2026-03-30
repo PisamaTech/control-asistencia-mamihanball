@@ -20,7 +20,8 @@
       "Bash(do gh:*)",
       "Bash(done)",
       "WebFetch(domain:v2.heroui.com)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(npm run build:*)"
     ]
   }
 }
