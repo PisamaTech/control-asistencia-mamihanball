@@ -2,12 +2,14 @@ import { collection, getDocs, query, where, Timestamp } from "firebase/firestore
 import { db } from "@/lib/firebase";
 import type { Player } from "./playerService";
 
-export type ReportPeriod = "week" | "month" | "3months";
+export type ReportPeriod = "week" | "month" | "3months" | "custom";
 export type ReportSessionType = "practice" | "game" | "all";
 
 export type ReportFilters = {
   period: ReportPeriod;
   sessionType: ReportSessionType;
+  startDate?: Date;
+  endDate?: Date;
 };
 
 export type PlayerStat = {
@@ -39,12 +41,26 @@ function getPeriodStart(period: ReportPeriod): Date {
 export async function getAttendanceStats(
   filters: ReportFilters
 ): Promise<PlayerStat[]> {
-  const periodStart = getPeriodStart(filters.period);
+  let periodStart: Date;
+  let periodEnd: Date | null = null;
+
+  if (filters.period === "custom") {
+    if (!filters.startDate || !filters.endDate) {
+      return [];
+    }
+    periodStart = filters.startDate;
+    periodEnd = filters.endDate;
+  } else {
+    periodStart = getPeriodStart(filters.period);
+  }
 
   // Build attendance query
   const constraints = [
     where("sessionDate", ">=", Timestamp.fromDate(periodStart)),
   ];
+  if (periodEnd) {
+    constraints.push(where("sessionDate", "<=", Timestamp.fromDate(periodEnd)));
+  }
   if (filters.sessionType !== "all") {
     constraints.push(where("sessionType", "==", filters.sessionType));
   }

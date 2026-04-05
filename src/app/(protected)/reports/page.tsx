@@ -8,7 +8,11 @@ import {
   Chip,
   Progress,
   CircularProgress,
+  DateRangePicker,
 } from "@heroui/react";
+import { CalendarDate } from "@internationalized/date";
+import type { RangeValue } from "@react-types/shared";
+import { getLocalTimeZone } from "@internationalized/date";
 import {
   getAttendanceStats,
   PlayerStat,
@@ -21,6 +25,7 @@ const PERIOD_LABELS: Record<ReportPeriod, string> = {
   week: "Semana",
   month: "Mes",
   "3months": "3 Meses",
+  custom: "Personalizado",
 };
 
 const SESSION_TYPE_LABELS: Record<ReportSessionType, string> = {
@@ -32,18 +37,26 @@ const SESSION_TYPE_LABELS: Record<ReportSessionType, string> = {
 export default function ReportsPage() {
   const [period, setPeriod] = useState<ReportPeriod>("month");
   const [sessionType, setSessionType] = useState<ReportSessionType>("all");
+  const [dateRange, setDateRange] = useState<RangeValue<CalendarDate> | null>(null);
   const [stats, setStats] = useState<PlayerStat[]>([]);
   const [loading, setLoading] = useState(false);
   const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
+    if (period === "custom" && (!dateRange?.start || !dateRange?.end)) return;
     load();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [period, sessionType]);
+  }, [period, sessionType, dateRange]);
 
   async function load() {
     setLoading(true);
-    const data = await getAttendanceStats({ period, sessionType });
+    let startDate: Date | undefined;
+    let endDate: Date | undefined;
+    if (period === "custom" && dateRange?.start && dateRange?.end) {
+      startDate = dateRange.start.toDate(getLocalTimeZone());
+      endDate = dateRange.end.toDate(getLocalTimeZone());
+    }
+    const data = await getAttendanceStats({ period, sessionType, startDate, endDate });
     const sorted = data.sort((a, b) => b.percentage - a.percentage);
     setStats(sorted);
     setLoading(false);
@@ -140,6 +153,19 @@ export default function ReportsPage() {
           ))}
         </div>
       </div>
+
+      {/* Custom Date Range Picker */}
+      {period === "custom" && (
+        <div className="mb-6">
+          <p className="text-sm font-semibold text-foreground mb-3">Rango de Fechas</p>
+          <DateRangePicker
+            label="Seleccionar fechas"
+            value={dateRange}
+            onChange={setDateRange}
+            className="max-w-sm"
+          />
+        </div>
+      )}
 
       {/* Type Selector */}
       <div className="mb-6">
