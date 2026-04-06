@@ -21,8 +21,9 @@ export default function ProtectedLayout({
               height={40}
               className="rounded-md"
             />
-            <span className="font-bold text-primary">
-              Control de Asistencias - Mamihandball
+            <span className="font-bold text-primary text-2xl">
+              Control de Asistencias -{" "}
+              <span className="text-blue-900/90">Mamihandball</span>
             </span>
           </div>
           <div className="flex items-center gap-6">

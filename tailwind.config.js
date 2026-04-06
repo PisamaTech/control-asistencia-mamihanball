@@ -104,7 +104,7 @@ module.exports = {
             background: "#f6fffa",
             foreground: "#004c1b",
             content1: {
-              DEFAULT: "#e0f5e8",
+              DEFAULT: "#e5f3f0",
               foreground: "#000",
             },
             content2: {

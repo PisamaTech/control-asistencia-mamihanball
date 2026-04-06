@@ -37,7 +37,9 @@ const SESSION_TYPE_LABELS: Record<ReportSessionType, string> = {
 export default function ReportsPage() {
   const [period, setPeriod] = useState<ReportPeriod>("month");
   const [sessionType, setSessionType] = useState<ReportSessionType>("all");
-  const [dateRange, setDateRange] = useState<RangeValue<CalendarDate> | null>(null);
+  const [dateRange, setDateRange] = useState<RangeValue<CalendarDate> | null>(
+    null,
+  );
   const [stats, setStats] = useState<PlayerStat[]>([]);
   const [loading, setLoading] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -45,7 +47,7 @@ export default function ReportsPage() {
   useEffect(() => {
     if (period === "custom" && (!dateRange?.start || !dateRange?.end)) return;
     load();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [period, sessionType, dateRange]);
 
   async function load() {
@@ -56,7 +58,12 @@ export default function ReportsPage() {
       startDate = dateRange.start.toDate(getLocalTimeZone());
       endDate = dateRange.end.toDate(getLocalTimeZone());
     }
-    const data = await getAttendanceStats({ period, sessionType, startDate, endDate });
+    const data = await getAttendanceStats({
+      period,
+      sessionType,
+      startDate,
+      endDate,
+    });
     const sorted = data.sort((a, b) => b.percentage - a.percentage);
     setStats(sorted);
     setLoading(false);
@@ -76,7 +83,11 @@ export default function ReportsPage() {
       doc.setFontSize(16);
       doc.text("MamiHandball — Reporte de Asistencia", 14, 20);
       doc.setFontSize(10);
-      doc.text(`Período: ${periodLabel} · Tipo: ${typeLabel} · Generado: ${dateStr}`, 14, 28);
+      doc.text(
+        `Período: ${periodLabel} · Tipo: ${typeLabel} · Generado: ${dateStr}`,
+        14,
+        28,
+      );
 
       autoTable(doc, {
         startY: 35,
@@ -99,9 +110,12 @@ export default function ReportsPage() {
     }
   }
 
-  const teamAverage = stats.length === 0
-    ? 0
-    : Math.round(stats.reduce((sum, s) => sum + s.percentage, 0) / stats.length);
+  const teamAverage =
+    stats.length === 0
+      ? 0
+      : Math.round(
+          stats.reduce((sum, s) => sum + s.percentage, 0) / stats.length,
+        );
 
   const totalSessions = stats.length > 0 ? stats[0].totalSessions : 0;
   const activePlayers = stats.length;
@@ -110,7 +124,7 @@ export default function ReportsPage() {
     <div className="max-w-2xl mx-auto w-full p-4 pb-24">
       {/* Header */}
       <div className="mb-6">
-        <p className="text-sm font-semibold tracking-wider text-default-500 uppercase mb-1">
+        <p className="text-sm font-semibold tracking-wider text-default-600 uppercase mb-1">
           RENDIMIENTO
         </p>
         <div className="flex items-center justify-between">
@@ -123,8 +137,16 @@ export default function ReportsPage() {
             onPress={handleExportPDF}
             startContent={
               !exporting && (
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z" clipRule="evenodd" />
+                <svg
+                  className="w-4 h-4"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               )
             }
@@ -138,26 +160,30 @@ export default function ReportsPage() {
       <div className="mb-6">
         <p className="text-sm font-semibold text-foreground mb-3">Período</p>
         <div className="flex flex-wrap gap-2">
-          {(Object.entries(PERIOD_LABELS) as [ReportPeriod, string][]).map(([key, label]) => (
-            <button
-              key={key}
-              onClick={() => setPeriod(key)}
-              className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                period === key
-                  ? "bg-teal-600 text-white shadow-md"
-                  : "bg-default-200 text-default-700 hover:bg-default-300"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
+          {(Object.entries(PERIOD_LABELS) as [ReportPeriod, string][]).map(
+            ([key, label]) => (
+              <button
+                key={key}
+                onClick={() => setPeriod(key)}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  period === key
+                    ? "bg-teal-600 text-white shadow-md"
+                    : "bg-default-200 text-default-700 hover:bg-default-300"
+                }`}
+              >
+                {label}
+              </button>
+            ),
+          )}
         </div>
       </div>
 
       {/* Custom Date Range Picker */}
       {period === "custom" && (
         <div className="mb-6">
-          <p className="text-sm font-semibold text-foreground mb-3">Rango de Fechas</p>
+          <p className="text-sm font-semibold text-foreground mb-3">
+            Rango de Fechas
+          </p>
           <DateRangePicker
             label="Seleccionar fechas"
             value={dateRange}
@@ -171,7 +197,9 @@ export default function ReportsPage() {
       <div className="mb-6">
         <p className="text-sm font-semibold text-foreground mb-3">Tipo</p>
         <div className="flex flex-wrap gap-2">
-          {(Object.entries(SESSION_TYPE_LABELS) as [ReportSessionType, string][]).map(([key, label]) => (
+          {(
+            Object.entries(SESSION_TYPE_LABELS) as [ReportSessionType, string][]
+          ).map(([key, label]) => (
             <button
               key={key}
               onClick={() => setSessionType(key)}
@@ -188,16 +216,23 @@ export default function ReportsPage() {
       </div>
 
       {loading ? (
-        <p className="text-center text-default-400 py-8">Cargando...</p>
+        <p className="text-center text-default-500 py-8">Cargando...</p>
       ) : stats.length === 0 ? (
-        <p className="text-center text-default-400 py-8">Sin datos para este período.</p>
+        <p className="text-center text-default-500 py-8">
+          Sin datos para este período.
+        </p>
       ) : (
         <>
           {/* Team Attendance */}
           <div className="mb-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-foreground">Asistencia del Equipo</h2>
-              <Chip size="sm" className="bg-orange-200 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300 font-semibold">
+              <h2 className="text-xl font-bold text-foreground">
+                Asistencia del Equipo
+              </h2>
+              <Chip
+                size="sm"
+                className="bg-orange-200 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300 font-semibold"
+              >
                 PROMEDIO
               </Chip>
             </div>
@@ -208,28 +243,40 @@ export default function ReportsPage() {
                     <CircularProgress
                       classNames={{
                         svg: "w-32 h-32",
-                        track: "stroke-default-200",
+                        track: "stroke-default-400",
                         indicator: "stroke-teal-600",
-                        value: "text-3xl font-bold text-foreground"
+                        value: "text-3xl font-bold text-foreground",
                       }}
                       value={teamAverage}
                       strokeWidth={4}
                       showValueLabel={true}
-                      formatOptions={{ style: "percent", minimumFractionDigits: 0, maximumFractionDigits: 0 }}
+                      formatOptions={{
+                        style: "percent",
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      }}
                     />
-                    <p className="text-center text-xs text-default-500 mt-2 font-medium">ASISTENCIA</p>
+                    <p className="text-center text-xs text-default-600 mt-2 font-medium">
+                      ASISTENCIA
+                    </p>
                   </div>
                   <div className="flex-1 space-y-4">
                     <div>
-                      <p className="text-sm text-default-600">Presente</p>
+                      <p className="text-sm text-default-700">Presente</p>
                       <p className="text-2xl font-bold text-foreground">
-                        {totalSessions} <span className="text-sm font-normal text-default-500">sesiones</span>
+                        {totalSessions}{" "}
+                        <span className="text-sm font-normal text-default-600">
+                          sesiones
+                        </span>
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm text-default-600">Excusadas</p>
+                      <p className="text-sm text-default-700">Excusadas</p>
                       <p className="text-2xl font-bold text-foreground">
-                        0 <span className="text-sm font-normal text-default-500">sesiones</span>
+                        0{" "}
+                        <span className="text-sm font-normal text-default-600">
+                          sesiones
+                        </span>
                       </p>
                     </div>
                   </div>
@@ -241,8 +288,13 @@ export default function ReportsPage() {
           {/* Player Performance */}
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-foreground">Rendimiento de Jugadoras</h2>
-              <Chip size="sm" className="bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300 font-semibold">
+              <h2 className="text-xl font-bold text-foreground">
+                Rendimiento de Jugadoras
+              </h2>
+              <Chip
+                size="sm"
+                className="bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300 font-semibold"
+              >
                 {activePlayers} Jugadoras en Total
               </Chip>
             </div>
@@ -274,13 +326,16 @@ export default function ReportsPage() {
                         <p className="font-semibold text-foreground text-base">
                           {s.player.firstName} {s.player.lastName}
                         </p>
-                        <p className="text-sm text-default-500">
+                        <p className="text-sm text-default-700">
                           {s.totalAttended}/{s.totalSessions} Sesiones
                         </p>
                       </div>
 
                       {/* Percentage and Progress */}
-                      <div className="flex-shrink-0 text-right" style={{ width: "80px" }}>
+                      <div
+                        className="flex-shrink-0 text-right"
+                        style={{ width: "80px" }}
+                      >
                         <p className="text-xl font-bold text-foreground mb-1">
                           {s.percentage}%
                         </p>
@@ -288,12 +343,13 @@ export default function ReportsPage() {
                           value={s.percentage}
                           classNames={{
                             base: "w-full",
-                            track: "h-1 bg-default-200",
-                            indicator: s.percentage >= 75
-                              ? "bg-primary"
-                              : s.percentage >= 50
-                              ? "bg-warning"
-                              : "bg-danger"
+                            track: "h-1 bg-default-400",
+                            indicator:
+                              s.percentage >= 75
+                                ? "bg-primary"
+                                : s.percentage >= 50
+                                  ? "bg-warning"
+                                  : "bg-danger",
                           }}
                         />
                       </div>
