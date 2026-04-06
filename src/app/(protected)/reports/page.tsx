@@ -186,9 +186,16 @@ export default function ReportsPage() {
           </p>
           <DateRangePicker
             label="Seleccionar fechas"
+            labelPlacement="inside"
             value={dateRange}
             onChange={setDateRange}
-            className="max-w-sm"
+            selectorButtonPlacement="start"
+            className="max-w-sm text-default-700"
+            classNames={{
+              label: "text-default-700 pb-1",
+              selectorButton: "mr-1",
+              inputWrapper: "data-[hover=true]:bg-default-100",
+            }}
           />
         </div>
       )}
