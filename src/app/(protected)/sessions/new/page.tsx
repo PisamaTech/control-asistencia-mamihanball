@@ -352,7 +352,7 @@ export default function NewSessionPage() {
         <div className="grid grid-cols-2 gap-3">
           <Button
             size="lg"
-            className="bg-warning-500 hover:bg-warning-600 text-white font-semibold"
+            className="bg-warning-400 hover:bg-warning-600 text-primary-700 dark:text-primary-100 font-semibold"
             onPress={() => cameraInputRef.current?.click()}
             startContent={
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
