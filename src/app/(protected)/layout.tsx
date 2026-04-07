@@ -23,7 +23,9 @@ export default function ProtectedLayout({
             />
             <span className="font-bold text-primary text-2xl">
               Control de Asistencias -{" "}
-              <span className="text-blue-900/90">Mamihandball</span>
+              <span className="text-blue-900/90 dark:text-blue-500/90">
+                Mamihandball
+              </span>
             </span>
           </div>
           <div className="flex items-center gap-6">

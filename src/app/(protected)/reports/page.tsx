@@ -196,6 +196,14 @@ export default function ReportsPage() {
               selectorButton: "mr-1",
               inputWrapper: "data-[hover=true]:bg-default-100",
             }}
+            calendarProps={{
+              classNames: {
+                title: "text-foreground font-semibold",
+                gridHeaderCell: "text-default-700 font-medium",
+                prevButton: "text-foreground",
+                nextButton: "text-foreground",
+              },
+            }}
           />
         </div>
       )}
