@@ -5,9 +5,14 @@
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#6366f1",
+  "theme_color": "#329c84",
   "orientation": "portrait",
   "icons": [
+    {
+      "src": "/icons/icon-48x48.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
     {
       "src": "/icons/icon-192x192.png",
       "sizes": "192x192",
