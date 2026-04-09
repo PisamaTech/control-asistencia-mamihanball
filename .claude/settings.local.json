@@ -21,7 +21,10 @@
       "Bash(done)",
       "WebFetch(domain:v2.heroui.com)",
       "Bash(git add:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(firebase deploy:*)",
+      "Bash(magick -version)",
+      "Bash(convert -version)"
     ]
   }
 }
