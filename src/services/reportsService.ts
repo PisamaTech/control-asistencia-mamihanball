@@ -61,10 +61,6 @@ export async function getAttendanceStats(
   if (periodEnd) {
     constraints.push(where("sessionDate", "<=", Timestamp.fromDate(periodEnd)));
   }
-  if (filters.sessionType !== "all") {
-    constraints.push(where("sessionType", "==", filters.sessionType));
-  }
-
   const attendanceSnap = await getDocs(
     query(collection(db, "attendance"), ...constraints)
   );
@@ -80,7 +76,14 @@ export async function getAttendanceStats(
   players.forEach((p) => agg.set(p.id, { attended: 0, practices: 0, games: 0, total: 0 }));
 
   for (const doc of attendanceSnap.docs) {
-    const { playerId, attended, sessionType } = doc.data();
+    const data = doc.data();
+    const { playerId, attended, sessionType } = data;
+    
+    // In-memory filter to avoid composite index requirement
+    if (filters.sessionType !== "all" && sessionType !== filters.sessionType) {
+      continue;
+    }
+
     const entry = agg.get(playerId);
     if (!entry) continue;
 

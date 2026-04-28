@@ -52,21 +52,26 @@ export default function ReportsPage() {
 
   async function load() {
     setLoading(true);
-    let startDate: Date | undefined;
-    let endDate: Date | undefined;
-    if (period === "custom" && dateRange?.start && dateRange?.end) {
-      startDate = dateRange.start.toDate(getLocalTimeZone());
-      endDate = dateRange.end.toDate(getLocalTimeZone());
+    try {
+      let startDate: Date | undefined;
+      let endDate: Date | undefined;
+      if (period === "custom" && dateRange?.start && dateRange?.end) {
+        startDate = dateRange.start.toDate(getLocalTimeZone());
+        endDate = dateRange.end.toDate(getLocalTimeZone());
+      }
+      const data = await getAttendanceStats({
+        period,
+        sessionType,
+        startDate,
+        endDate,
+      });
+      const sorted = data.sort((a, b) => b.percentage - a.percentage);
+      setStats(sorted);
+    } catch (error) {
+      console.error("Error loading reports:", error);
+    } finally {
+      setLoading(false);
     }
-    const data = await getAttendanceStats({
-      period,
-      sessionType,
-      startDate,
-      endDate,
-    });
-    const sorted = data.sort((a, b) => b.percentage - a.percentage);
-    setStats(sorted);
-    setLoading(false);
   }
 
   async function handleExportPDF() {
