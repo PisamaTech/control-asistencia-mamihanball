@@ -137,7 +137,7 @@ export function BottomNavigation() {
             key={item.href}
             href={item.href}
             aria-current={isActive ? "page" : undefined}
-            className={`flex flex-col items-center gap-1 px-2 py-1 text-[10px] font-medium transition-colors ${
+            className={`flex flex-col items-center gap-1 px-2 text-xs font-medium transition-colors ${
               isActive
                 ? "text-primary-600"
                 : "text-default-500 dark:text-default-400 hover:text-primary-400"
