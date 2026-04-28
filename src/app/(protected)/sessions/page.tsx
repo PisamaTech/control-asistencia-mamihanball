@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button, Card, CardBody, Chip, Divider } from "@heroui/react";
-import { getSessions, getSessionDetail, Session, SessionDetail } from "@/services/sessionService";
+import { getSessions, getSessionDetail, deleteSession, updateSession, Session, SessionDetail } from "@/services/sessionService";
 
 const TYPE_LABEL = { practice: "Práctica", game: "Partido" };
 const METHOD_LABEL: Record<string, string> = { facial: "IA", manual: "Manual" };
@@ -16,16 +16,50 @@ export default function SessionsPage() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loadingList, setLoadingList] = useState(true);
   const [detail, setDetail] = useState<SessionDetail | null | undefined>(undefined);
+  const [deleting, setDeleting] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editNotes, setEditNotes] = useState("");
 
   useEffect(() => {
     getSessions().then((s) => { setSessions(s); setLoadingList(false); });
   }, []);
 
   useEffect(() => {
-    if (!selectedId) { setDetail(undefined); return; }
+    if (!selectedId) { setDetail(undefined); setIsEditing(false); return; }
     setDetail(undefined);
-    getSessionDetail(selectedId).then(setDetail);
+    setIsEditing(false);
+    getSessionDetail(selectedId).then((d) => {
+      setDetail(d);
+      if (d) setEditNotes(d.session.notes);
+    });
   }, [selectedId]);
+
+  const handleDelete = async () => {
+    if (!selectedId || !window.confirm("¿Estás segura de eliminar esta sesión? Esta acción no se puede deshacer.")) return;
+    setDeleting(true);
+    try {
+      await deleteSession(selectedId);
+      router.push("/sessions");
+      getSessions().then(setSessions);
+    } catch (err) {
+      console.error(err);
+      alert("Error al eliminar la sesión");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handleUpdate = async () => {
+    if (!selectedId) return;
+    try {
+      await updateSession(selectedId, { notes: editNotes });
+      setIsEditing(false);
+      getSessionDetail(selectedId).then(setDetail);
+    } catch (err) {
+      console.error(err);
+      alert("Error al actualizar la sesión");
+    }
+  };
 
   // Detail view
   if (selectedId) {
@@ -47,12 +81,25 @@ export default function SessionsPage() {
         <Button size="sm" variant="light" onPress={() => router.push("/sessions")} className="mb-3 -ml-2">
           ← Volver
         </Button>
-        <h1 className="mb-1 text-xl font-bold">
-          {session.date.toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric" })}
-        </h1>
-        <Chip variant="flat" color={session.type === "game" ? "warning" : "primary"} className="mb-4">
-          {TYPE_LABEL[session.type]}
-        </Chip>
+        <div className="flex items-center justify-between gap-2 mb-4">
+          <div className="flex-1">
+            <h1 className="mb-1 text-xl font-bold">
+              {session.date.toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric" })}
+            </h1>
+            <Chip variant="flat" color={session.type === "game" ? "warning" : "primary"}>
+              {TYPE_LABEL[session.type]}
+            </Chip>
+          </div>
+          <div className="flex gap-1">
+            <Button size="sm" variant="flat" onPress={() => setIsEditing(!isEditing)}>
+              {isEditing ? "Cancelar" : "Editar"}
+            </Button>
+            <Button size="sm" variant="flat" color="danger" isLoading={deleting} onPress={handleDelete}>
+              Eliminar
+            </Button>
+          </div>
+        </div>
+
         {session.photoURL && (
           // eslint-disable-next-line @next/next/no-img-element
           <img 
@@ -61,7 +108,23 @@ export default function SessionsPage() {
             className="mb-4 w-full rounded-xl shadow-md" 
           />
         )}
-        {session.notes && <p className="mb-4 text-sm text-default-500">{session.notes}</p>}
+        
+        {isEditing ? (
+          <div className="mb-6 flex flex-col gap-2">
+            <textarea
+              className="w-full p-3 rounded-xl border-2 border-default-200 bg-background text-sm focus:border-primary outline-none"
+              placeholder="Notas de la sesión..."
+              rows={3}
+              value={editNotes}
+              onChange={(e) => setEditNotes(e.target.value)}
+            />
+            <Button color="primary" size="sm" onPress={handleUpdate}>
+              Guardar Cambios
+            </Button>
+          </div>
+        ) : (
+          session.notes && <p className="mb-4 text-sm text-default-500 bg-default-50 p-3 rounded-xl border border-default-100">{session.notes}</p>
+        )}
 
         <h2 className="mb-2 font-semibold text-success">Presentes ({attended.length})</h2>
         <div className="flex flex-col gap-2 mb-4">

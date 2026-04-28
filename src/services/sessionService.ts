@@ -145,3 +145,43 @@ export async function getSessionDetail(
 
   return { session, attended, absent };
 }
+
+export async function deleteSession(sessionId: string): Promise<void> {
+  const batch = writeBatch(db);
+
+  // 1. Borrar la sesión
+  batch.delete(doc(db, "sessions", sessionId));
+
+  // 2. Buscar y borrar asistencias relacionadas
+  const attendanceSnap = await getDocs(
+    query(collection(db, "attendance"), where("sessionId", "==", sessionId))
+  );
+  attendanceSnap.forEach((d) => batch.delete(d.ref));
+
+  await batch.commit();
+}
+
+export async function updateSession(
+  sessionId: string,
+  data: Partial<Omit<Session, "id" | "createdBy" | "createdAt">>
+): Promise<void> {
+  const batch = writeBatch(db);
+  const sessionRef = doc(db, "sessions", sessionId);
+  batch.update(sessionRef, data);
+
+  // Si se cambia la fecha o el tipo, actualizar también los registros de asistencia
+  if (data.date || data.type) {
+    const attendanceSnap = await getDocs(
+      query(collection(db, "attendance"), where("sessionId", "==", sessionId))
+    );
+    attendanceSnap.forEach((d) => {
+      const updates: any = {};
+      if (data.date) updates.sessionDate = data.date;
+      if (data.type) updates.sessionType = data.type;
+      batch.update(d.ref, updates);
+    });
+  }
+
+  await batch.commit();
+}
+
