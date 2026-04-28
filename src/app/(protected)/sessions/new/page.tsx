@@ -152,8 +152,7 @@ export default function NewSessionPage() {
             <img
               src={photoPreview}
               alt="Foto de la sesión"
-              className="w-full rounded-xl object-cover shadow-md"
-              style={{ maxHeight: 200 }}
+              className="w-full rounded-xl shadow-md"
             />
           )}
 
@@ -393,8 +392,7 @@ export default function NewSessionPage() {
             <img
               src={photoPreview}
               alt="Vista previa"
-              className="w-full rounded-xl object-cover shadow-md"
-              style={{ maxHeight: 240 }}
+              className="w-full rounded-xl shadow-md"
             />
             <button
               onClick={() => {

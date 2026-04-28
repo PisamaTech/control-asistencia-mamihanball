@@ -55,7 +55,11 @@ export default function SessionsPage() {
         </Chip>
         {session.photoURL && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={session.photoURL} alt="Foto" className="mb-4 w-full rounded-xl object-cover" style={{ maxHeight: 220 }} />
+          <img 
+            src={session.photoURL} 
+            alt="Foto" 
+            className="mb-4 w-full rounded-xl shadow-md" 
+          />
         )}
         {session.notes && <p className="mb-4 text-sm text-default-500">{session.notes}</p>}
 

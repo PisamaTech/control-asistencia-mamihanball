@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button, Card, CardBody } from "@heroui/react";
 import { useRouter } from "next/navigation";
-import { getDashboardStats, DashboardStats } from "@/services/dashboardService";
+import { getDashboardStats, DashboardStats, SessionWithStats } from "@/services/dashboardService";
 
 const SESSION_TYPE_LABELS: Record<string, { label: string; color: string }> = {
   practice: { label: "PRÁCTICA", color: "bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300" },
@@ -110,7 +110,10 @@ export default function DashboardPage() {
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-foreground">Sesiones Recientes</h2>
-          <button className="text-teal-600 text-sm font-semibold hover:text-teal-700">
+          <button 
+            className="text-teal-600 text-sm font-semibold hover:text-teal-700 transition-colors"
+            onClick={() => router.push("/sessions")}
+          >
             VER TODO
           </button>
         </div>
@@ -121,9 +124,7 @@ export default function DashboardPage() {
           </p>
         ) : (
           <div className="flex flex-col gap-3">
-            {recentSessions.map((session, idx) => {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              const s = session as any;
+            {recentSessions.map((session: SessionWithStats, idx) => {
               const date = new Date(session.date);
               const day = date.getDate();
               const month = date.toLocaleDateString("es", { month: "short" }).toUpperCase();
@@ -132,7 +133,12 @@ export default function DashboardPage() {
               const borderColor = borderColors[idx % borderColors.length];
 
               return (
-                <Card key={session.id} className="shadow-sm">
+                <Card 
+                  key={session.id} 
+                  className="shadow-sm hover:shadow-md transition-shadow" 
+                  isPressable 
+                  onPress={() => router.push(`/sessions?id=${session.id}`)}
+                >
                   <CardBody className="p-0">
                     <div className="flex items-center gap-4 p-4">
                       {/* Fecha */}
@@ -144,22 +150,24 @@ export default function DashboardPage() {
                       {/* Detalles */}
                       <div className="flex-1 min-w-0">
                         <h3 className="font-semibold text-foreground truncate mb-1">
-                          {s.name || "Sesión"}
+                          Sesión
                         </h3>
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className={`text-xs font-semibold px-2 py-0.5 rounded ${sessionType.color}`}>
                             {sessionType.label}
                           </span>
-                          <span className="text-xs text-default-500">
-                            {s.location || "Sin ubicación"}
-                          </span>
+                          {session.notes && (
+                            <span className="text-xs text-default-500 truncate">
+                              {session.notes}
+                            </span>
+                          )}
                         </div>
                       </div>
 
-                      {/* Fecha corta */}
+                      {/* Asistencia */}
                       <div className="flex flex-col items-end flex-shrink-0">
                         <span className="text-xl font-bold text-foreground">
-                          {s.presentCount || 0}/{s.totalPlayers || 0}
+                          {session.presentCount}/{session.totalPlayers}
                         </span>
                         <span className="text-xs text-default-500 uppercase">PRESENTES</span>
                       </div>
