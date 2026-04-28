@@ -163,17 +163,66 @@ export async function deleteSession(sessionId: string): Promise<void> {
 
 export async function updateSession(
   sessionId: string,
-  data: Partial<Omit<Session, "id" | "createdBy" | "createdAt">>
+  data: Partial<Omit<Session, "id" | "createdBy" | "createdAt">> & {
+    attendedPlayerIds?: string[];
+    allPlayerIds?: string[];
+  }
 ): Promise<void> {
   const batch = writeBatch(db);
   const sessionRef = doc(db, "sessions", sessionId);
-  batch.update(sessionRef, data);
 
-  // Si se cambia la fecha o el tipo, actualizar también los registros de asistencia
-  if (data.date || data.type) {
-    const attendanceSnap = await getDocs(
-      query(collection(db, "attendance"), where("sessionId", "==", sessionId))
+  // 1. Actualizar datos básicos de la sesión
+  const sessionUpdate: any = {};
+  if (data.date) sessionUpdate.date = data.date;
+  if (data.type) sessionUpdate.type = data.type;
+  if (data.notes !== undefined) sessionUpdate.notes = data.notes;
+  if (Object.keys(sessionUpdate).length > 0) {
+    batch.update(sessionRef, sessionUpdate);
+  }
+
+  // 2. Actualizar registros de asistencia
+  const attendanceSnap = await getDocs(
+    query(collection(db, "attendance"), where("sessionId", "==", sessionId))
+  );
+
+  // Si se pasaron los IDs de jugadores, actualizamos el estado de cada uno
+  if (data.attendedPlayerIds && data.allPlayerIds) {
+    const attendedSet = new Set(data.attendedPlayerIds);
+    const existingAttendanceMap = new Map(
+      attendanceSnap.docs.map((d) => [d.data().playerId, d])
     );
+
+    for (const playerId of data.allPlayerIds) {
+      const isAttended = attendedSet.has(playerId);
+      const existingDoc = existingAttendanceMap.get(playerId);
+
+      if (existingDoc) {
+        batch.update(existingDoc.ref, {
+          attended: isAttended,
+          // Mantener el método si ya era facial/manual, o resetear si cambió
+          // (Si pasa de no asistió a asistió en edición, marcamos como manual)
+          method: isAttended 
+            ? (existingDoc.data().method === "none" ? "manual" : existingDoc.data().method) 
+            : "none",
+          ...(data.date && { sessionDate: data.date }),
+          ...(data.type && { sessionType: data.type }),
+        });
+      } else {
+        // Si por alguna razón no existía el registro para este jugador, lo creamos
+        const newAttendanceRef = doc(collection(db, "attendance"));
+        batch.set(newAttendanceRef, {
+          sessionId,
+          sessionDate: data.date || new Date(), // fallback
+          sessionType: data.type || "practice", // fallback
+          playerId,
+          attended: isAttended,
+          method: isAttended ? "manual" : "none",
+          createdAt: serverTimestamp(),
+        });
+      }
+    }
+  } else if (data.date || data.type) {
+    // Si solo cambió fecha/tipo pero no la lista de jugadores
     attendanceSnap.forEach((d) => {
       const updates: any = {};
       if (data.date) updates.sessionDate = data.date;
@@ -184,4 +233,5 @@ export async function updateSession(
 
   await batch.commit();
 }
+
 

@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Button, Card, CardBody, Chip, Divider } from "@heroui/react";
+import { Button, Card, CardBody, Chip, Divider, Checkbox, CheckboxGroup } from "@heroui/react";
 import { getSessions, getSessionDetail, deleteSession, updateSession, Session, SessionDetail } from "@/services/sessionService";
+import { getPlayers, Player } from "@/services/playerService";
 
 const TYPE_LABEL = { practice: "Práctica", game: "Partido" };
 const METHOD_LABEL: Record<string, string> = { facial: "IA", manual: "Manual" };
@@ -19,9 +20,12 @@ export default function SessionsPage() {
   const [deleting, setDeleting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editNotes, setEditNotes] = useState("");
+  const [checkedIds, setCheckedIds] = useState<string[]>([]);
+  const [allPlayers, setAllPlayers] = useState<Player[]>([]);
 
   useEffect(() => {
     getSessions().then((s) => { setSessions(s); setLoadingList(false); });
+    getPlayers().then((p) => setAllPlayers(p.filter(p => p.status === "active")));
   }, []);
 
   useEffect(() => {
@@ -30,7 +34,10 @@ export default function SessionsPage() {
     setIsEditing(false);
     getSessionDetail(selectedId).then((d) => {
       setDetail(d);
-      if (d) setEditNotes(d.session.notes);
+      if (d) {
+        setEditNotes(d.session.notes);
+        setCheckedIds(d.attended.map(a => a.player.id));
+      }
     });
   }, [selectedId]);
 
@@ -52,7 +59,11 @@ export default function SessionsPage() {
   const handleUpdate = async () => {
     if (!selectedId) return;
     try {
-      await updateSession(selectedId, { notes: editNotes });
+      await updateSession(selectedId, { 
+        notes: editNotes,
+        attendedPlayerIds: checkedIds,
+        allPlayerIds: allPlayers.map(p => p.id)
+      });
       setIsEditing(false);
       getSessionDetail(selectedId).then(setDetail);
     } catch (err) {
@@ -110,48 +121,78 @@ export default function SessionsPage() {
         )}
         
         {isEditing ? (
-          <div className="mb-6 flex flex-col gap-2">
-            <textarea
-              className="w-full p-3 rounded-xl border-2 border-default-200 bg-background text-sm focus:border-primary outline-none"
-              placeholder="Notas de la sesión..."
-              rows={3}
-              value={editNotes}
-              onChange={(e) => setEditNotes(e.target.value)}
-            />
-            <Button color="primary" size="sm" onPress={handleUpdate}>
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-2">
+              <textarea
+                className="w-full p-3 rounded-xl border-2 border-default-200 bg-background text-sm focus:border-primary outline-none"
+                placeholder="Notas de la sesión..."
+                rows={3}
+                value={editNotes}
+                onChange={(e) => setEditNotes(e.target.value)}
+              />
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <h2 className="font-semibold text-foreground">Editar Asistencia</h2>
+              <CheckboxGroup
+                value={checkedIds}
+                onValueChange={setCheckedIds}
+                className="gap-2"
+              >
+                {allPlayers.map((p) => (
+                  <Card key={p.id} className="shadow-sm">
+                    <CardBody className="flex flex-row items-center gap-3 py-3 px-4">
+                      <Checkbox value={p.id} />
+                      <span className="font-medium">
+                        {p.firstName} {p.lastName}
+                      </span>
+                    </CardBody>
+                  </Card>
+                ))}
+              </CheckboxGroup>
+            </div>
+
+            <Button 
+              color="primary" 
+              size="lg" 
+              className="w-full h-14 font-semibold shadow-lg" 
+              onPress={handleUpdate}
+            >
               Guardar Cambios
             </Button>
           </div>
         ) : (
-          session.notes && <p className="mb-4 text-sm text-default-500 bg-default-50 p-3 rounded-xl border border-default-100">{session.notes}</p>
+          <>
+            {session.notes && <p className="mb-4 text-sm text-default-500 bg-default-50 p-3 rounded-xl border border-default-100">{session.notes}</p>}
+            
+            <h2 className="mb-2 font-semibold text-success">Presentes ({attended.length})</h2>
+            <div className="flex flex-col gap-2 mb-4">
+              {attended.length === 0 && <p className="text-sm text-default-400">Ninguna.</p>}
+              {attended.map(({ player, method }) => (
+                <Card key={player.id} className="w-full">
+                  <CardBody className="flex flex-row items-center justify-between py-2">
+                    <span className="font-medium">{player.firstName} {player.lastName}</span>
+                    <Chip size="sm" variant="flat" color={method === "facial" ? "primary" : "default"}>
+                      {METHOD_LABEL[method] ?? method}
+                    </Chip>
+                  </CardBody>
+                </Card>
+              ))}
+            </div>
+            <Divider className="my-4" />
+            <h2 className="mb-2 font-semibold text-default-500">Ausentes ({absent.length})</h2>
+            <div className="flex flex-col gap-2">
+              {absent.length === 0 && <p className="text-sm text-default-400">Todas presentes.</p>}
+              {absent.map((player) => (
+                <Card key={player.id} className="w-full opacity-60">
+                  <CardBody className="py-2">
+                    <span>{player.firstName} {player.lastName}</span>
+                  </CardBody>
+                </Card>
+              ))}
+            </div>
+          </>
         )}
-
-        <h2 className="mb-2 font-semibold text-success">Presentes ({attended.length})</h2>
-        <div className="flex flex-col gap-2 mb-4">
-          {attended.length === 0 && <p className="text-sm text-default-400">Ninguna.</p>}
-          {attended.map(({ player, method }) => (
-            <Card key={player.id} className="w-full">
-              <CardBody className="flex flex-row items-center justify-between py-2">
-                <span className="font-medium">{player.firstName} {player.lastName}</span>
-                <Chip size="sm" variant="flat" color={method === "facial" ? "primary" : "default"}>
-                  {METHOD_LABEL[method] ?? method}
-                </Chip>
-              </CardBody>
-            </Card>
-          ))}
-        </div>
-        <Divider className="my-4" />
-        <h2 className="mb-2 font-semibold text-default-500">Ausentes ({absent.length})</h2>
-        <div className="flex flex-col gap-2">
-          {absent.length === 0 && <p className="text-sm text-default-400">Todas presentes.</p>}
-          {absent.map((player) => (
-            <Card key={player.id} className="w-full opacity-60">
-              <CardBody className="py-2">
-                <span>{player.firstName} {player.lastName}</span>
-              </CardBody>
-            </Card>
-          ))}
-        </div>
       </div>
     );
   }
