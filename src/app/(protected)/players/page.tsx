@@ -50,6 +50,7 @@ export default function PlayersPage() {
     null,
     null,
   ]);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const inputStyles = {
@@ -77,6 +78,7 @@ export default function PlayersPage() {
     setForm({ firstName: "", lastName: "", jerseyNumber: "", position: "" });
     setPhotoFiles([null, null, null]);
     setPhotoPreviews([null, null, null]);
+    setErrorMessage(null);
     onOpen();
   }
 
@@ -90,6 +92,7 @@ export default function PlayersPage() {
     });
     setPhotoFiles([null, null, null]);
     setPhotoPreviews([...player.referencePhotoURLs.slice(0, 3)]);
+    setErrorMessage(null);
     onOpen();
   }
 
@@ -136,6 +139,7 @@ export default function PlayersPage() {
   async function handleSave() {
     if (!form.firstName.trim() || !form.lastName.trim()) return;
     setSaving(true);
+    setErrorMessage(null);
     setSavingStatus("Guardando...");
     try {
       const jerseyNumber = form.jerseyNumber
@@ -177,6 +181,10 @@ export default function PlayersPage() {
       }
       await load();
       onClose();
+    } catch (e) {
+      setErrorMessage(
+        e instanceof Error ? e.message : "Error inesperado al guardar",
+      );
     } finally {
       setSaving(false);
       setSavingStatus("");
@@ -364,6 +372,11 @@ export default function PlayersPage() {
                 ))}
               </div>
             </div>
+            {errorMessage && (
+              <div className="rounded-lg border border-danger-200 bg-danger-50 px-4 py-3 text-sm text-danger-600">
+                {errorMessage}
+              </div>
+            )}
           </ModalBody>
           <ModalFooter>
             <Button variant="flat" onPress={onClose}>

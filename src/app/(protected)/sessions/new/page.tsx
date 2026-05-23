@@ -124,87 +124,129 @@ export default function NewSessionPage() {
   }
 
   if (step === "confirm") {
+    const unrecognized = players.filter(
+      (p) => !recognizedIds.includes(p.id),
+    );
+    const recognized = players.filter((p) =>
+      recognizedIds.includes(p.id),
+    );
+
     return (
-      <div className="bg-background min-h-screen">
-        <div className="max-w-2xl mx-auto w-full flex flex-col gap-6 p-6 pb-24">
-          {/* Header de progreso */}
-          <div>
+      <div className="bg-background h-dvh flex flex-col overflow-hidden">
+        {/* ── Top: header + imagen fijos ── */}
+        <div className="shrink-0">
+          <div className="max-w-2xl mx-auto w-full p-6 pb-0">
             <div className="flex items-center justify-between mb-2">
               <h1 className="text-sm font-semibold tracking-wider text-warning-700 uppercase">
                 NUEVA SESIÓN
               </h1>
               <span className="text-sm text-default-500">Paso 2 de 2</span>
             </div>
-            <div className="h-2 bg-default-200 rounded-full overflow-hidden">
+            <div className="h-2 bg-default-200 rounded-full overflow-hidden mb-4">
               <div
                 className="h-full bg-primary-600 rounded-full"
                 style={{ width: "100%" }}
               />
             </div>
+
+            <h2 className="text-xl font-bold text-foreground mb-4">
+              Confirmar Asistencia
+            </h2>
+
+            {photoPreview && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={photoPreview}
+                alt="Foto de la sesión"
+                className="w-full rounded-xl shadow-md"
+              />
+            )}
+
+            <p className="text-sm text-default-600 mt-3 mb-1">
+              {recognizedIds.length} jugadora
+              {recognizedIds.length !== 1 ? "s" : ""} reconocida
+              {recognizedIds.length !== 1 ? "s" : ""} automáticamente. Revisá y
+              ajustá si es necesario.
+            </p>
           </div>
+        </div>
 
-          <h2 className="text-xl font-bold text-foreground">
-            Confirmar Asistencia
-          </h2>
-
-          {photoPreview && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={photoPreview}
-              alt="Foto de la sesión"
-              className="w-full rounded-xl shadow-md"
-            />
-          )}
-
-          <p className="text-sm text-default-600">
-            {recognizedIds.length} jugadora
-            {recognizedIds.length !== 1 ? "s" : ""} reconocida
-            {recognizedIds.length !== 1 ? "s" : ""} automáticamente. Revisá y
-            ajustá si es necesario.
-          </p>
-
-          <CheckboxGroup
-            value={checkedIds}
-            onValueChange={setCheckedIds}
-            className="gap-2"
-          >
-            {players.map((p) => (
-              <Card key={p.id} className="shadow-sm">
-                <CardBody className="flex flex-row items-center justify-between py-3 px-4">
-                  <div className="flex items-center gap-3">
-                    <Checkbox value={p.id} />
-                    <span className="font-medium">
-                      {p.firstName} {p.lastName}
-                    </span>
-                  </div>
-                  {recognizedIds.includes(p.id) && (
-                    <Chip
-                      size="sm"
-                      className="bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300 font-semibold"
-                    >
-                      IA
-                    </Chip>
-                  )}
-                </CardBody>
-              </Card>
-            ))}
-          </CheckboxGroup>
-
-          <div className="flex gap-3 mt-4">
-            <Button
-              variant="bordered"
-              onPress={() => setStep("form")}
-              className="flex-1 h-12 font-semibold"
+        {/* ── Scrollable: lista de jugadoras ── */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="max-w-2xl mx-auto w-full px-6 pb-4">
+            <CheckboxGroup
+              value={checkedIds}
+              onValueChange={setCheckedIds}
+              className="flex flex-col gap-2"
             >
-              Volver
-            </Button>
-            <Button
-              className="flex-1 h-12 bg-primary-600 text-white font-semibold hover:bg-primary-700"
-              onPress={handleSave}
-              isLoading={saving}
-            >
-              Guardar Sesión
-            </Button>
+              {unrecognized.length > 0 && (
+                <div key="unrecognized-section">
+                  <p className="text-sm font-semibold text-warning-600 mb-2 mt-1">
+                    No reconocidas ({unrecognized.length})
+                  </p>
+                  {unrecognized.map((p) => (
+                    <Card key={p.id} className="shadow-sm mb-2">
+                      <CardBody className="flex flex-row items-center justify-between py-3 px-4">
+                        <div className="flex items-center gap-3">
+                          <Checkbox value={p.id} />
+                          <span className="font-medium">
+                            {p.firstName} {p.lastName}
+                          </span>
+                        </div>
+                      </CardBody>
+                    </Card>
+                  ))}
+                </div>
+              )}
+
+              {recognized.length > 0 && (
+                <div key="recognized-section">
+                  <p className="text-sm font-semibold text-teal-600 mb-2 mt-1">
+                    Reconocidas por IA ({recognized.length})
+                  </p>
+                  {recognized.map((p) => (
+                    <Card key={p.id} className="shadow-sm mb-2">
+                      <CardBody className="flex flex-row items-center justify-between py-3 px-4">
+                        <div className="flex items-center gap-3">
+                          <Checkbox value={p.id} />
+                          <span className="font-medium">
+                            {p.firstName} {p.lastName}
+                          </span>
+                        </div>
+                        <Chip
+                          size="sm"
+                          className="bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300 font-semibold"
+                        >
+                          IA
+                        </Chip>
+                      </CardBody>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </CheckboxGroup>
+          </div>
+        </div>
+
+        {/* ── Bottom: botones fijos ── */}
+        <div className="shrink-0 border-t border-default-100 bg-background">
+          <div className="max-w-2xl mx-auto w-full p-6">
+            <div className="flex gap-3">
+              <Button
+                variant="bordered"
+                onPress={() => setStep("form")}
+                className="flex-1 h-12 font-semibold"
+              >
+                Volver
+              </Button>
+              <Button
+                className="flex-1 h-12 bg-primary-600 text-white font-semibold hover:bg-primary-700"
+                onPress={handleSave}
+                isLoading={saving}
+              >
+                Guardar Sesión
+              </Button>
+            </div>
           </div>
         </div>
       </div>
