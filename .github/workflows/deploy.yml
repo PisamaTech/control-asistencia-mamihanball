@@ -12,10 +12,10 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
-      - run: npm ci
+      - run: npm ci --legacy-peer-deps
       - run: npm run build
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
@@ -24,3 +24,5 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_TOKEN }}
           channelId: live
           projectId: mamihanball-erikitas
+          # Si ves error 401 o "missing credential", falta el secreto
+          # FIREBASE_TOKEN en GitHub → Settings → Secrets → Actions
