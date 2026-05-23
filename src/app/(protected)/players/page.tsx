@@ -241,11 +241,13 @@ export default function PlayersPage() {
       </div>
 
       <div className="mb-4 flex gap-2">
-        {([
-          { key: "name", label: "Nombre" },
-          { key: "position", label: "Posición" },
-          { key: "number", label: "Número" },
-        ] as const).map((opt) => (
+        {(
+          [
+            { key: "name", label: "Nombre" },
+            { key: "position", label: "Posición" },
+            { key: "number", label: "Número" },
+          ] as const
+        ).map((opt) => (
           <button
             key={opt.key}
             onClick={() => setSortBy(opt.key)}
