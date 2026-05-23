@@ -34,6 +34,7 @@ export default function PlayersPage() {
   const [savingStatus, setSavingStatus] = useState("");
   const [selected, setSelected] = useState<Player | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState<"name" | "position" | "number">("name");
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -196,15 +197,30 @@ export default function PlayersPage() {
     await load();
   }
 
-  const filteredPlayers = players.filter((p) => {
-    const query = searchQuery.toLowerCase();
-    return (
-      p.firstName.toLowerCase().includes(query) ||
-      p.lastName.toLowerCase().includes(query) ||
-      p.position?.toLowerCase().includes(query) ||
-      p.jerseyNumber?.toString().includes(query)
-    );
-  });
+  const filteredPlayers = players
+    .filter((p) => {
+      const query = searchQuery.toLowerCase();
+      return (
+        p.firstName.toLowerCase().includes(query) ||
+        p.lastName.toLowerCase().includes(query) ||
+        p.position?.toLowerCase().includes(query) ||
+        p.jerseyNumber?.toString().includes(query)
+      );
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case "name":
+          return `${a.lastName} ${a.firstName}`.localeCompare(
+            `${b.lastName} ${b.firstName}`,
+          );
+        case "position":
+          return (a.position ?? "").localeCompare(b.position ?? "");
+        case "number":
+          return (a.jerseyNumber ?? 999) - (b.jerseyNumber ?? 999);
+        default:
+          return 0;
+      }
+    });
 
   return (
     <div className="max-w-2xl mx-auto w-full p-4">
@@ -222,6 +238,26 @@ export default function PlayersPage() {
           onValueChange={setSearchQuery}
           classNames={inputStyles}
         />
+      </div>
+
+      <div className="mb-4 flex gap-2">
+        {([
+          { key: "name", label: "Nombre" },
+          { key: "position", label: "Posición" },
+          { key: "number", label: "Número" },
+        ] as const).map((opt) => (
+          <button
+            key={opt.key}
+            onClick={() => setSortBy(opt.key)}
+            className={`rounded-full px-3 py-1 text-xs font-semibold transition-all ${
+              sortBy === opt.key
+                ? "bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300"
+                : "bg-default-100 text-default-500 hover:bg-default-200"
+            }`}
+          >
+            {opt.label}
+          </button>
+        ))}
       </div>
 
       {loading ? (
