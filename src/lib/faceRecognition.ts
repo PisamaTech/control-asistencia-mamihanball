@@ -104,10 +104,10 @@ export async function recognizeFaces(
     playerId: null,
     playerName: null,
     box: {
-      x: Math.round(d.box.x),
-      y: Math.round(d.box.y),
-      width: Math.round(d.box.width),
-      height: Math.round(d.box.height),
+      x: Math.round(d.detection.box.x),
+      y: Math.round(d.detection.box.y),
+      width: Math.round(d.detection.box.width),
+      height: Math.round(d.detection.box.height),
     },
     distance: null,
   }));
