@@ -1,7 +1,8 @@
 import * as faceapi from "face-api.js";
 import type { Player } from "@/services/playerService";
 
-const MATCH_THRESHOLD = 0.6;
+const MATCH_THRESHOLD = 0.5;
+const DETECTION_CONFIDENCE = 0.7;
 
 function euclideanDistance(a: number[], b: number[]): number {
   return Math.sqrt(a.reduce((sum, val, i) => sum + (val - b[i]) ** 2, 0));
@@ -58,7 +59,10 @@ export async function recognizeFaces(
   const img = await createImageElement(file);
 
   const detections = await faceapi
-    .detectAllFaces(img)
+    .detectAllFaces(
+      img,
+      new faceapi.SsdMobilenetv1Options({ minConfidence: DETECTION_CONFIDENCE }),
+    )
     .withFaceLandmarks()
     .withFaceDescriptors();
 
