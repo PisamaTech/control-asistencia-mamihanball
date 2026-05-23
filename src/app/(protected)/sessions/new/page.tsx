@@ -17,7 +17,7 @@ import type { DateValue } from "@internationalized/date";
 import { getPlayers, Player } from "@/services/playerService";
 import { addSession } from "@/services/sessionService";
 import { compressImage } from "@/lib/imageCompressor";
-import { recognizeFaces } from "@/lib/faceRecognition";
+import { recognizeFaces, type FaceMatch } from "@/lib/faceRecognition";
 import { uploadSessionPhoto } from "@/services/storageService";
 import { useAuth } from "@/lib/useAuth";
 
@@ -44,6 +44,11 @@ export default function NewSessionPage() {
   const [recognizedIds, setRecognizedIds] = useState<string[]>([]);
   const [checkedIds, setCheckedIds] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
+  const [faceMatches, setFaceMatches] = useState<FaceMatch[]>([]);
+  const [imageNaturalSize, setImageNaturalSize] = useState({
+    width: 0,
+    height: 0,
+  });
 
   useEffect(() => {
     getPlayers().then((all) =>
@@ -65,9 +70,17 @@ export default function NewSessionPage() {
     const compressed = await compressImage(photoFile);
 
     setProcessingStatus("Reconociendo jugadoras...");
-    const ids = await recognizeFaces(compressed, players);
-    setRecognizedIds(ids);
-    setCheckedIds(ids);
+    const result = await recognizeFaces(compressed, players);
+    setFaceMatches(result.matches);
+    setImageNaturalSize({
+      width: result.imageWidth,
+      height: result.imageHeight,
+    });
+    const matchedIds = result.matches
+      .filter((m) => m.playerId)
+      .map((m) => m.playerId!);
+    setRecognizedIds(matchedIds);
+    setCheckedIds(matchedIds);
 
     setStep("confirm");
   }
@@ -154,12 +167,44 @@ export default function NewSessionPage() {
             </h2>
 
             {photoPreview && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={photoPreview}
-                alt="Foto de la sesión"
-                className="w-full rounded-xl shadow-md"
-              />
+              <div className="relative w-full rounded-xl shadow-md overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={photoPreview}
+                  alt="Foto de la sesión"
+                  className="w-full h-auto block"
+                />
+                {/* Overlay de caras detectadas */}
+                {imageNaturalSize.width > 0 &&
+                  faceMatches.map((face, i) => {
+                    const isMatched = face.playerId !== null;
+                    return (
+                      <div
+                        key={i}
+                        className="absolute border-2 rounded-sm pointer-events-none"
+                        style={{
+                          left: `${(face.box.x / imageNaturalSize.width) * 100}%`,
+                          top: `${(face.box.y / imageNaturalSize.height) * 100}%`,
+                          width: `${(face.box.width / imageNaturalSize.width) * 100}%`,
+                          height: `${(face.box.height / imageNaturalSize.height) * 100}%`,
+                          borderColor: isMatched
+                            ? "#22c55e"
+                            : "#ef4444",
+                        }}
+                      >
+                        <span
+                          className={`absolute -top-5 left-0 text-[10px] leading-tight font-semibold text-white px-1 rounded-sm whitespace-nowrap ${
+                            isMatched
+                              ? "bg-green-600/80"
+                              : "bg-red-600/80"
+                          }`}
+                        >
+                          {isMatched ? face.playerName : "?"}
+                        </span>
+                      </div>
+                    );
+                  })}
+              </div>
             )}
 
             <p className="text-sm text-default-600 mt-3 mb-1">
