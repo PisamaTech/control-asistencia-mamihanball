@@ -7,7 +7,6 @@ import {
   Card,
   CardBody,
   Checkbox,
-  CheckboxGroup,
   Chip,
   DatePicker,
   Slider,
@@ -309,27 +308,41 @@ export default function NewSessionPage() {
               </Button>
             </div>
 
-            <CheckboxGroup
-              value={checkedIds}
-              onValueChange={setCheckedIds}
-              className="flex flex-col gap-2"
-            >
+            <div className="flex flex-col gap-2">
               {unrecognized.length > 0 && (
                 <div key="unrecognized-section">
                   <p className="text-sm font-semibold text-warning-600 mb-2 mt-1">
                     No reconocidas ({unrecognized.length})
                   </p>
                   {unrecognized.map((p) => (
-                    <Card key={p.id} className="shadow-sm mb-2">
-                      <CardBody className="flex flex-row items-center justify-between py-3 px-4">
-                        <div className="flex items-center gap-3">
-                          <Checkbox value={p.id} />
-                          <span className="font-medium">
-                            {p.firstName} {p.lastName}
-                          </span>
-                        </div>
-                      </CardBody>
-                    </Card>
+                    <div
+                      key={p.id}
+                      className="cursor-pointer"
+                      onClick={() =>
+                        setCheckedIds((prev) =>
+                          prev.includes(p.id)
+                            ? prev.filter((id) => id !== p.id)
+                            : [...prev, p.id],
+                        )
+                      }
+                    >
+                      <Card className="shadow-sm mb-2">
+                        <CardBody className="flex flex-row items-center justify-between py-3 px-4">
+                          <div className="flex items-center gap-3">
+                            <Checkbox
+                              value={p.id}
+                              isSelected={checkedIds.includes(p.id)}
+                              classNames={{
+                                base: "pointer-events-none",
+                              }}
+                            />
+                            <span className="font-medium">
+                              {p.firstName} {p.lastName}
+                            </span>
+                          </div>
+                        </CardBody>
+                      </Card>
+                    </div>
                   ))}
                 </div>
               )}
@@ -340,26 +353,44 @@ export default function NewSessionPage() {
                     Reconocidas por IA ({recognized.length})
                   </p>
                   {recognized.map((p) => (
-                    <Card key={p.id} className="shadow-sm mb-2">
-                      <CardBody className="flex flex-row items-center justify-between py-3 px-4">
-                        <div className="flex items-center gap-3">
-                          <Checkbox value={p.id} />
-                          <span className="font-medium">
-                            {p.firstName} {p.lastName}
-                          </span>
-                        </div>
-                        <Chip
-                          size="sm"
-                          className="bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300 font-semibold"
-                        >
-                          IA
-                        </Chip>
-                      </CardBody>
-                    </Card>
+                    <div
+                      key={p.id}
+                      className="cursor-pointer"
+                      onClick={() =>
+                        setCheckedIds((prev) =>
+                          prev.includes(p.id)
+                            ? prev.filter((id) => id !== p.id)
+                            : [...prev, p.id],
+                        )
+                      }
+                    >
+                      <Card className="shadow-sm mb-2">
+                        <CardBody className="flex flex-row items-center justify-between py-3 px-4">
+                          <div className="flex items-center gap-3">
+                            <Checkbox
+                              value={p.id}
+                              isSelected={checkedIds.includes(p.id)}
+                              classNames={{
+                                base: "pointer-events-none",
+                              }}
+                            />
+                            <span className="font-medium">
+                              {p.firstName} {p.lastName}
+                            </span>
+                          </div>
+                          <Chip
+                            size="sm"
+                            className="bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300 font-semibold"
+                          >
+                            IA
+                          </Chip>
+                        </CardBody>
+                      </Card>
+                    </div>
                   ))}
                 </div>
               )}
-            </CheckboxGroup>
+            </div>
           </div>
         </div>
 
