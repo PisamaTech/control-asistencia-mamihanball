@@ -1,8 +1,8 @@
 import * as faceapi from "face-api.js";
 import type { Player } from "@/services/playerService";
 
-const MATCH_THRESHOLD = 0.55;
-const DETECTION_CONFIDENCE = 0.6;
+const DEFAULT_MATCH_THRESHOLD = 0.55;
+const DEFAULT_DETECTION_CONFIDENCE = 0.6;
 
 function euclideanDistance(a: number[], b: number[]): number {
   return Math.sqrt(a.reduce((sum, val, i) => sum + (val - b[i]) ** 2, 0));
@@ -79,10 +79,23 @@ export interface RecognitionResult {
  *   y cada jugadora solo puede ser asignada una vez.
  * - Devuelve coordenadas de cada cara para mostrarlas en la UI.
  */
+export interface RecognitionOptions {
+  /** Minimum confidence for face detection (0-1). Default: 0.6 */
+  detectionConfidence?: number;
+  /** Maximum Euclidean distance for a match (0-1). Default: 0.55 */
+  matchThreshold?: number;
+}
+
 export async function recognizeFaces(
   file: File,
   players: Player[],
+  options?: RecognitionOptions,
 ): Promise<RecognitionResult> {
+  const detectionConfidence =
+    options?.detectionConfidence ?? DEFAULT_DETECTION_CONFIDENCE;
+  const matchThreshold =
+    options?.matchThreshold ?? DEFAULT_MATCH_THRESHOLD;
+
   await loadModels();
 
   const img = await createImageElement(file);
@@ -93,7 +106,7 @@ export async function recognizeFaces(
     .detectAllFaces(
       img,
       new faceapi.SsdMobilenetv1Options({
-        minConfidence: DETECTION_CONFIDENCE,
+        minConfidence: detectionConfidence,
       }),
     )
     .withFaceLandmarks()
@@ -138,7 +151,7 @@ export async function recognizeFaces(
         ),
       );
 
-      if (minDist <= MATCH_THRESHOLD) {
+      if (minDist <= matchThreshold) {
         candidates.push({
           detectionIndex: di,
           playerId: player.id,

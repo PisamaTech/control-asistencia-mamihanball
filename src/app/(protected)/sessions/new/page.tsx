@@ -10,6 +10,7 @@ import {
   CheckboxGroup,
   Chip,
   DatePicker,
+  Slider,
   Textarea,
 } from "@heroui/react";
 import { parseDate, today, getLocalTimeZone } from "@internationalized/date";
@@ -50,6 +51,9 @@ export default function NewSessionPage() {
     height: 0,
   });
   const [isZoomed, setIsZoomed] = useState(false);
+  const [detectionConfidence, setDetectionConfidence] = useState(0.6);
+  const [matchThreshold, setMatchThreshold] = useState(0.55);
+  const [isReprocessing, setIsReprocessing] = useState(false);
 
   useEffect(() => {
     getPlayers().then((all) =>
@@ -71,7 +75,10 @@ export default function NewSessionPage() {
     const compressed = await compressImage(photoFile);
 
     setProcessingStatus("Reconociendo jugadoras...");
-    const result = await recognizeFaces(compressed, players);
+    const result = await recognizeFaces(compressed, players, {
+      detectionConfidence,
+      matchThreshold,
+    });
     setFaceMatches(result.matches);
     setImageNaturalSize({
       width: result.imageWidth,
@@ -119,6 +126,30 @@ export default function NewSessionPage() {
       router.push("/sessions");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleReprocess() {
+    if (!photoFile) return;
+    setIsReprocessing(true);
+    try {
+      const compressed = await compressImage(photoFile);
+      const result = await recognizeFaces(compressed, players, {
+        detectionConfidence,
+        matchThreshold,
+      });
+      setFaceMatches(result.matches);
+      setImageNaturalSize({
+        width: result.imageWidth,
+        height: result.imageHeight,
+      });
+      const matchedIds = result.matches
+        .filter((m) => m.playerId)
+        .map((m) => m.playerId!);
+      setRecognizedIds(matchedIds);
+      setCheckedIds(matchedIds);
+    } finally {
+      setIsReprocessing(false);
     }
   }
 
@@ -223,6 +254,60 @@ export default function NewSessionPage() {
               {recognizedIds.length !== 1 ? "s" : ""} automáticamente. Revisá y
               ajustá si es necesario.
             </p>
+
+            {/* ── Ajustes de detección ── */}
+            <div className="bg-content1 rounded-xl p-4 border border-default-200 mb-4">
+              <p className="text-sm font-semibold text-foreground mb-3">
+                Ajustes de detección
+              </p>
+
+              <div className="mb-4">
+                <p className="text-xs text-default-500 mb-2">
+                  Confianza de detección: menor detecta más (puede dar falsos
+                  positivos)
+                </p>
+                <Slider
+                  label="Confianza"
+                  value={detectionConfidence}
+                  onChange={(v) =>
+                    setDetectionConfidence(v as number)
+                  }
+                  minValue={0.3}
+                  maxValue={0.9}
+                  step={0.05}
+                  className="w-full"
+                />
+              </div>
+
+              <div className="mb-3">
+                <p className="text-xs text-default-500 mb-2">
+                  Umbral de coincidencia: menor es más estricto para
+                  reconocer
+                </p>
+                <Slider
+                  label="Umbral"
+                  value={matchThreshold}
+                  onChange={(v) =>
+                    setMatchThreshold(v as number)
+                  }
+                  minValue={0.3}
+                  maxValue={0.8}
+                  step={0.05}
+                  className="w-full"
+                />
+              </div>
+
+              <Button
+                size="sm"
+                className="w-full font-semibold"
+                color="primary"
+                variant="flat"
+                onPress={handleReprocess}
+                isLoading={isReprocessing}
+              >
+                Re-procesar con estos parámetros
+              </Button>
+            </div>
 
             <CheckboxGroup
               value={checkedIds}
