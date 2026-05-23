@@ -49,6 +49,7 @@ export default function NewSessionPage() {
     width: 0,
     height: 0,
   });
+  const [isZoomed, setIsZoomed] = useState(false);
 
   useEffect(() => {
     getPlayers().then((all) =>
@@ -145,8 +146,9 @@ export default function NewSessionPage() {
     );
 
     return (
+      <>
       <div className="bg-background h-dvh flex flex-col overflow-hidden">
-        {/* ── Top: header + imagen fijos ── */}
+        {/* ── Top: header fijo (solo título + progreso) ── */}
         <div className="shrink-0">
           <div className="max-w-2xl mx-auto w-full p-6 pb-0">
             <div className="flex items-center justify-between mb-2">
@@ -165,9 +167,17 @@ export default function NewSessionPage() {
             <h2 className="text-xl font-bold text-foreground mb-4">
               Confirmar Asistencia
             </h2>
+          </div>
+        </div>
 
+        {/* ── Scrollable: imagen + descripción + lista de jugadoras ── */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="max-w-2xl mx-auto w-full px-6 pb-4">
             {photoPreview && (
-              <div className="relative w-full rounded-xl shadow-md overflow-hidden">
+              <div
+                className="relative w-full rounded-xl shadow-md overflow-hidden mb-4 cursor-zoom-in"
+                onClick={() => setIsZoomed(true)}
+              >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={photoPreview}
@@ -207,18 +217,13 @@ export default function NewSessionPage() {
               </div>
             )}
 
-            <p className="text-sm text-default-600 mt-3 mb-1">
+            <p className="text-sm text-default-600 mb-4">
               {recognizedIds.length} jugadora
               {recognizedIds.length !== 1 ? "s" : ""} reconocida
               {recognizedIds.length !== 1 ? "s" : ""} automáticamente. Revisá y
               ajustá si es necesario.
             </p>
-          </div>
-        </div>
 
-        {/* ── Scrollable: lista de jugadoras ── */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="max-w-2xl mx-auto w-full px-6 pb-4">
             <CheckboxGroup
               value={checkedIds}
               onValueChange={setCheckedIds}
@@ -295,7 +300,24 @@ export default function NewSessionPage() {
           </div>
         </div>
       </div>
-    );
+
+      {/* ── Zoom modal ── */}
+      {isZoomed && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 overflow-auto touch-auto"
+          onClick={() => setIsZoomed(false)}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={photoPreview!}
+            alt="Ampliar foto"
+            className="block min-h-full w-full h-auto"
+            onClick={(e) => e.stopPropagation()}
+            draggable={false}
+          />
+        </div>
+      )}
+      </>);
   }
 
   return (
