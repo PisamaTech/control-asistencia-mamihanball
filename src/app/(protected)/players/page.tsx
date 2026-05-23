@@ -210,8 +210,8 @@ export default function PlayersPage() {
     .sort((a, b) => {
       switch (sortBy) {
         case "name":
-          return `${a.lastName} ${a.firstName}`.localeCompare(
-            `${b.lastName} ${b.firstName}`,
+          return `${a.firstName} ${a.lastName}`.localeCompare(
+            `${b.firstName} ${b.lastName}`,
           );
         case "position":
           return (a.position ?? "").localeCompare(b.position ?? "");
