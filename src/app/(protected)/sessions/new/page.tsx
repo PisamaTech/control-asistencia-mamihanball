@@ -391,13 +391,22 @@ export default function NewSessionPage() {
         <div
           className="fixed inset-0 z-50 bg-black/90 overflow-auto touch-auto"
           onClick={() => setIsZoomed(false)}
+          onKeyDown={(e) => e.key === "Escape" && setIsZoomed(false)}
         >
+          {/* Botón cerrar */}
+          <button
+            className="fixed top-4 right-4 z-10 bg-black/50 text-white rounded-full w-10 h-10 flex items-center justify-center text-xl hover:bg-black/70 transition-colors"
+            onClick={() => setIsZoomed(false)}
+            aria-label="Cerrar zoom"
+          >
+            ✕
+          </button>
+
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={photoPreview!}
             alt="Ampliar foto"
             className="block min-h-full w-full h-auto"
-            onClick={(e) => e.stopPropagation()}
             draggable={false}
           />
         </div>
