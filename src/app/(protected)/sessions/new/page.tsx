@@ -67,38 +67,47 @@ export default function NewSessionPage() {
   }
 
   async function handleProcess() {
-    if (!photoFile) return;
     setStep("processing");
 
-    setProcessingStatus("Comprimiendo imagen...");
-    const compressed = await compressImage(photoFile);
+    if (photoFile) {
+      setProcessingStatus("Comprimiendo imagen...");
+      const compressed = await compressImage(photoFile);
 
-    setProcessingStatus("Reconociendo jugadoras...");
-    const result = await recognizeFaces(compressed, players, {
-      detectionConfidence,
-      matchThreshold,
-    });
-    setFaceMatches(result.matches);
-    setImageNaturalSize({
-      width: result.imageWidth,
-      height: result.imageHeight,
-    });
-    const matchedIds = result.matches
-      .filter((m) => m.playerId)
-      .map((m) => m.playerId!);
-    setRecognizedIds(matchedIds);
-    setCheckedIds(matchedIds);
+      setProcessingStatus("Reconociendo jugadoras...");
+      const result = await recognizeFaces(compressed, players, {
+        detectionConfidence,
+        matchThreshold,
+      });
+      setFaceMatches(result.matches);
+      setImageNaturalSize({
+        width: result.imageWidth,
+        height: result.imageHeight,
+      });
+      const matchedIds = result.matches
+        .filter((m) => m.playerId)
+        .map((m) => m.playerId!);
+      setRecognizedIds(matchedIds);
+      setCheckedIds(matchedIds);
+    } else {
+      setRecognizedIds([]);
+      setCheckedIds([]);
+      setFaceMatches([]);
+      setImageNaturalSize({ width: 0, height: 0 });
+    }
 
     setStep("confirm");
   }
 
   async function handleSave() {
-    if (!photoFile || !user) return;
+    if (!user) return;
     setSaving(true);
     try {
-      const compressed = await compressImage(photoFile);
-      const tempId = `session_${Date.now()}`;
-      const photoURL = await uploadSessionPhoto(tempId, compressed);
+      let photoURL = "";
+      if (photoFile) {
+        const compressed = await compressImage(photoFile);
+        const tempId = `session_${Date.now()}`;
+        photoURL = await uploadSessionPhoto(tempId, compressed);
+      }
 
       const manualIds = checkedIds.filter((id) => !recognizedIds.includes(id));
 
@@ -254,59 +263,60 @@ export default function NewSessionPage() {
               ajustá si es necesario.
             </p>
 
-            {/* ── Ajustes de detección ── */}
-            <div className="bg-content1 rounded-xl p-4 border border-default-200 mb-4">
-              <p className="text-sm font-semibold text-foreground mb-3">
-                Ajustes de detección
-              </p>
-
-              <div className="mb-4">
-                <p className="text-xs text-default-500 mb-2">
-                  Confianza de detección: menor detecta más (puede dar falsos
-                  positivos)
+            {photoPreview && (
+              <div className="bg-content1 rounded-xl p-4 border border-default-200 mb-4">
+                <p className="text-sm font-semibold text-foreground mb-3">
+                  Ajustes de detección
                 </p>
-                <Slider
-                  label="Confianza"
-                  value={detectionConfidence}
-                  onChange={(v) =>
-                    setDetectionConfidence(v as number)
-                  }
-                  minValue={0.3}
-                  maxValue={0.9}
-                  step={0.05}
-                  className="w-full"
-                />
-              </div>
 
-              <div className="mb-3">
-                <p className="text-xs text-default-500 mb-2">
-                  Umbral de coincidencia: menor es más estricto para
-                  reconocer
-                </p>
-                <Slider
-                  label="Umbral"
-                  value={matchThreshold}
-                  onChange={(v) =>
-                    setMatchThreshold(v as number)
-                  }
-                  minValue={0.3}
-                  maxValue={0.8}
-                  step={0.05}
-                  className="w-full"
-                />
-              </div>
+                <div className="mb-4">
+                  <p className="text-xs text-default-500 mb-2">
+                    Confianza de detección: menor detecta más (puede dar falsos
+                    positivos)
+                  </p>
+                  <Slider
+                    label="Confianza"
+                    value={detectionConfidence}
+                    onChange={(v) =>
+                      setDetectionConfidence(v as number)
+                    }
+                    minValue={0.3}
+                    maxValue={0.9}
+                    step={0.05}
+                    className="w-full"
+                  />
+                </div>
 
-              <Button
-                size="sm"
-                className="w-full font-semibold"
-                color="primary"
-                variant="flat"
-                onPress={handleReprocess}
-                isLoading={isReprocessing}
-              >
-                Re-procesar con estos parámetros
-              </Button>
-            </div>
+                <div className="mb-3">
+                  <p className="text-xs text-default-500 mb-2">
+                    Umbral de coincidencia: menor es más estricto para
+                    reconocer
+                  </p>
+                  <Slider
+                    label="Umbral"
+                    value={matchThreshold}
+                    onChange={(v) =>
+                      setMatchThreshold(v as number)
+                    }
+                    minValue={0.3}
+                    maxValue={0.8}
+                    step={0.05}
+                    className="w-full"
+                  />
+                </div>
+
+                <Button
+                  size="sm"
+                  className="w-full font-semibold"
+                  color="primary"
+                  variant="flat"
+                  onPress={handleReprocess}
+                  isLoading={isReprocessing}
+                >
+                  Re-procesar con estos parámetros
+                </Button>
+              </div>
+            )}
 
             <div className="flex flex-col gap-2">
               {unrecognized.length > 0 && (
@@ -661,39 +671,26 @@ export default function NewSessionPage() {
         {/* Botón siguiente */}
         <Button
           size="lg"
-          isDisabled={!photoFile}
           onPress={handleProcess}
-          className={`w-full h-14 text-lg font-semibold ${
-            photoFile
-              ? "bg-teal-600 text-white hover:bg-teal-700"
-              : "bg-default-300 text-default-500 cursor-not-allowed"
-          }`}
+          className="w-full h-14 text-lg font-semibold bg-teal-600 text-white hover:bg-teal-700"
           endContent={
-            photoFile && (
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            )
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
           }
         >
           Siguiente
         </Button>
-
-        {!photoFile && (
-          <p className="text-center text-sm text-default-500 -mt-4">
-            Debes capturar una imagen para proceder al registro de asistencia.
-          </p>
-        )}
 
         {/* Inputs ocultos */}
         <input
